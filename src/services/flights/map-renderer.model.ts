@@ -1,16 +1,22 @@
 import {IFeature, IGeometry} from "../data.service";
 import {spheriticalToCartesian} from "../../models/spheritical-to-cartesian.model";
+import RenderPass from "../../models/render-pass";
 
 export const MULTI_POLYGON = 'MultiPolygon';
 export const POLYGON = 'Polygon';
 
-export class MapRenderer {
+export class MapRenderer extends RenderPass {
   private _group: THREE.Group;
   private _lines: THREE.Line[];
   private _lineMaterial: THREE.LineBasicMaterial;
 
-  constructor(group: THREE.Group) {
-    this._group = group;
+  constructor(renderer: THREE.WebGLRenderer, camera: THREE.Camera) {
+    super(renderer, new THREE.Scene(), camera);
+
+    this._group = new THREE.Group();
+    this._group.rotateX(-Math.PI / 1.4);
+    this._scene.add(this._group);
+
     this._lines = [];
     this._lineMaterial = new THREE.LineBasicMaterial({ color: 0xffffff });
 

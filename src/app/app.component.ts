@@ -18,6 +18,6 @@ export class AppComponent implements AfterViewInit {
   ) {}
 
   ngAfterViewInit(): void {
-    this.renderService.init(this.renderContainer)
+    this.renderService.initRenderer(this.renderContainer)
   }
 }

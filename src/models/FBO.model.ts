@@ -4,16 +4,12 @@
 
 export class FBO {
   private _renderer: THREE.WebGLRenderer;
-  private _scene: THREE.Scene;
-  private _particles: any;
-  private _orthoCamera: THREE.OrthographicCamera;
-  private _renderTarget: THREE.WebGLRenderTarget;
+  private _fboScene: THREE.Scene;
+  private _orthographicCamera: THREE.OrthographicCamera;
+  private _renderTargets: THREE.WebGLRenderTarget[];
+  private _numRenderTargets: number;
 
-  private _startTime: number;
-  private _endTime: number;
-  private _currentTime: number;
-
-  constructor(width: number, height: number, renderer: any, simulationMaterial: THREE.ShaderMaterial, renderMaterial: THREE.ShaderMaterial) {
+  constructor(width: number, height: number, renderer: THREE.WebGLRenderer, shader: THREE.ShaderMaterial, numRenderTargets?: number) {
     this._renderer = renderer;
     let gl: WebGLRenderingContext = this._renderer.getContext();
 
@@ -25,51 +21,60 @@ export class FBO {
       throw new Error('Vertex shader cannot read textures');
     }
 
-    this._scene = new THREE.Scene();
-    this._orthoCamera = new THREE.OrthographicCamera(-1, 1, 1, -1, 1 / Math.pow( 2, 53 ), 1);
-    this._renderTarget = new THREE.WebGLRenderTarget(width, height, {
-      wrapS: THREE.ClampToEdgeWrapping,
-      wrapT: THREE.ClampToEdgeWrapping,
-      minFilter: THREE.NearestFilter,
-      magFilter: THREE.NearestFilter,
-      format: THREE.RGBAFormat,
-      type: THREE.FloatType,
-      stencilBuffer: false
-    });
+    this._orthographicCamera = new THREE.OrthographicCamera(-1, 1, 1, -1, 1 / Math.pow( 2, 53 ), 1);
 
-    let bufferGeometry = new THREE.BufferGeometry();
-    bufferGeometry.addAttribute('position', new THREE.BufferAttribute(new Float32Array([-1,-1,0,1,-1,0,1,1,0,-1,-1,0,1,1,0,-1,1,0]), 3 ));
-    bufferGeometry.addAttribute('uv', new THREE.BufferAttribute(new Float32Array([0,1,1,1,1,0,0,1,1,0,0,0]),2));
-    this._scene.add(new THREE.Mesh(bufferGeometry, simulationMaterial));
-
-    let l = width * height;
-    let vertices = new Float32Array(l * 3);
-    for (let i = 0; i < l; i++) {
-      let i3 = i * 3;
-      vertices[i3] = (i % width) / width;
-      vertices[i3 + 1] = (i / width) / height;
+    if (numRenderTargets != null) {
+      this._numRenderTargets =  numRenderTargets;
+      this._renderTargets = [];
+      for (let i = 0; i < numRenderTargets; i++) {
+        this._renderTargets.push(new THREE.WebGLRenderTarget(width, height, {
+          minFilter: THREE.NearestFilter,
+          magFilter: THREE.NearestFilter,
+          format: THREE.RGBFormat,
+          type: THREE.FloatType,
+        }));
+      }
+    }
+    else {
+      this._numRenderTargets = 1;
+      this._renderTargets = [];
+      this._renderTargets.push(new THREE.WebGLRenderTarget(width, height, {
+        minFilter: THREE.NearestFilter,
+        magFilter: THREE.NearestFilter,
+        format: THREE.RGBFormat,
+        type: THREE.FloatType,
+      }));
     }
 
-    let geometry = new THREE.BufferGeometry();
-    geometry.addAttribute('position', new THREE.BufferAttribute(vertices, 3));
+    console.log(this._renderTargets.length);
 
-    this._particles = new THREE.Points(geometry, renderMaterial);
-
-    this._startTime = this._particles.material.uniforms.startTime.value;
-    this._endTime = this._particles.material.uniforms.endTime.value;
-    this._currentTime = this._particles.material.uniforms.currentTime.value;
-
-    //console.log(this._startTime, this._endTime, this._currentTime);
+    this._fboScene = new THREE.Scene();
+    let geometry = new THREE.PlaneGeometry( 2, 2, 2 );
+    let plane = new THREE.Mesh( geometry, shader );
+    this._fboScene.add( plane );
   }
 
-  public update() {
-    this._currentTime += 10;
-    this._particles.material.uniforms.currentTime.value = this._currentTime;
-    //console.log(this._particles.material.uniforms.currentTime.value);
-    this._renderer.render(this._scene, this._orthoCamera, this._renderTarget);
+  public renderToViewport() {
+    this._renderer.render(this._fboScene, this._orthographicCamera);
   }
 
-  get particles(): THREE.Points {
-    return this._particles;
+  public render(index?: number) {
+    //console.log(index);
+    if (index == null) {
+      this._renderer.render(this._fboScene, this._orthographicCamera, this._renderTargets[0]);
+    }
+    else {
+      this._renderer.render(this._fboScene, this._orthographicCamera, this._renderTargets[index]);
+    }
+  }
+
+
+  get texture() {
+    return this._renderTargets[0].texture;
+  }
+
+  getTextureAtIndex(index: number) {
+    //console.log(this._renderTargets[index].texture);
+    return this._renderTargets[index].texture;
   }
 }

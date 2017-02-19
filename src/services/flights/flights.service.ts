@@ -29,7 +29,7 @@ export class FlightsService {
       dataService.flights.subscribe((flights: Flight[]) => {
         this._flights = flights;
         //this._flightsRenderer.drawFlights(this._flights, this._airports);
-        renderService.initFBO(this._flights, this._airports);
+        renderService.initData(this._flights, this._airports);
       });
 
       //this._airportsRenderer.drawAirports(airports);

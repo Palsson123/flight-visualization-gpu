@@ -45,9 +45,6 @@ export class RenderService {
     this._mapGroup.rotateX(-Math.PI / 1.4);
     this._scene.add(this._mapGroup);
 
-    this._mapRenderer = new MapRenderer(this._renderer, this._camera);
-    dataService.features.subscribe((features: IFeature[]) => this._mapRenderer.drawMap(features));
-
     this._flightsParticleSystem = new FlightsParticleSystem(this._renderer, this._camera);
   }
 
@@ -80,7 +77,9 @@ export class RenderService {
       vertical_glow_vs: '',
       vertical_glow_fs: '',
       horizontal_glow_vs: '',
-      horizontal_glow_fs: ''
+      horizontal_glow_fs: '',
+      earth_vs: '',
+      earth_fs: ''
     },
     './assets/shaders/',
     () => {
@@ -90,6 +89,9 @@ export class RenderService {
   }
 
   public initData(flights: Flight[], airports: {[id: string]: Airport}) {
+    this._mapRenderer = new MapRenderer(this._renderer, this._camera, this._shaderLoader);
+    this.dataService.features.subscribe((features: IFeature[]) => this._mapRenderer.drawMap(features));
+
     this._flightsParticleSystem.init(flights, airports, this._shaderLoader);
 
     this._composerUniforms = {

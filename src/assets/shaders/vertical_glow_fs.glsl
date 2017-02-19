@@ -11,7 +11,7 @@ void main() {
         texture2D( inputTexture, vUv - vec2(0.0, 2.0) / size ).xyz
     );
 
-    vec3 minVal = vec3(0,0,0);
-    vec3 maxVal = vec3(1.8);
+    vec3 minVal = vec3(0.0);
+    vec3 maxVal = vec3(5.0);
     gl_FragColor = vec4(clamp(clr / 5.0, minVal, maxVal), 1.0);
 }

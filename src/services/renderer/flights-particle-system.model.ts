@@ -61,7 +61,7 @@ export class FlightsParticleSystem {
 
     let blurTexture = this._flightTrailFBO.getTextureAtIndex(this._currentIndex);
 
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < 15; i++) {
       this._horizontalBlurUniforms.inputTexture.value = blurTexture;
       this._horizontalBlurFBO.render();
 

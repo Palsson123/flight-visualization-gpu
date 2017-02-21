@@ -17,7 +17,6 @@ export class RenderService {
   private _renderTarget: THREE.WebGLRenderTarget;
 
   //private _renderShader: THREE
-  private _mapGroup: THREE.Group;
   private _flightsParticleSystem: FlightsParticleSystem;
 
   private _fbo: FBO;
@@ -41,18 +40,16 @@ export class RenderService {
       type: THREE.FloatType,
     });
 
-    this._mapGroup = new THREE.Group();
-    this._mapGroup.rotateX(-Math.PI / 1.4);
-    this._scene.add(this._mapGroup);
-
     this._flightsParticleSystem = new FlightsParticleSystem(this._renderer, this._camera);
   }
 
+  private time = 0.0;
   private render = () => {
     requestAnimationFrame( this.render );
 
     this._controls.update();
 
+    this._mapRenderer.update(this.time);
     this._mapRenderer.render();
     this._composerUniforms.map.value = this._mapRenderer.texture;
 
@@ -61,6 +58,8 @@ export class RenderService {
     this._composerUniforms.flightsGlow.value = this._flightsParticleSystem.glowTexture;
 
     this._fbo.renderToViewport();
+
+    this.time += 0.01;
   };
 
   public initRenderer(domElement: ElementRef) {

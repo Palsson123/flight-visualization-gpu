@@ -1,7 +1,7 @@
 import ShaderMaterial = THREE.ShaderMaterial;
 import {invertNormals} from "../utils/invertNormals";
-import Blur from "../blur/blur";
-import {FBO} from "../../models/FBO.model";
+import Blur from "../utils/blur/blur";
+import {FBO} from "../utils/fbo/fbo";
 import {Settings} from "../settings";
 
 /*

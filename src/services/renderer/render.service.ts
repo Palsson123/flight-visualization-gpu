@@ -1,13 +1,17 @@
 import {Injectable, ElementRef} from "@angular/core";
-import {MapRenderer} from "./flights/map-renderer.model";
-import {DataService, IFeature} from "./data.service";
-import {FBO} from "../models/FBO.model";
-import ShaderLoader from "../models/shader-loader";
-import {Flight} from "./flights/flight.model";
-import {Airport} from "../models/airport.model";
-import {FlightsParticleSystem} from "./renderer/flights-particle-system.model";
-import FlightParticles from "../renderer/flight-particles/flight-particles";
+import {MapRenderer} from "../flights/map-renderer.model";
+import {DataService, IFeature} from "../data.service";
+import {FBO} from "../../renderer/utils/fbo/fbo";
+import {Flight} from "../flights/flight.model";
+import {Airport} from "../../models/airport.model";
+import FlightParticles from "../../renderer/flight-particles/flight-particles";
 const Stats = require('stats-js');
+
+/*
+ Shader imports
+ */
+const composerFrag = require('raw-loader!glslify-loader!./shaders/composer.frag');
+const composerVert = require('raw-loader!glslify-loader!./shaders/composer.vert');
 
 @Injectable()
 export class RenderService {
@@ -23,7 +27,6 @@ export class RenderService {
 
   private _fbo: FBO;
   private _composerUniforms: any;
-  private _shaderLoader: ShaderLoader;
 
   constructor(private dataService: DataService) {
     this._scene = new THREE.Scene();
@@ -80,22 +83,8 @@ export class RenderService {
   };
 
   public initRenderer(domElement: ElementRef) {
-    this._shaderLoader = new ShaderLoader();
-    this._shaderLoader.loadShaders({
-      simulation_vs : '',
-      simulation_fs : '',
-      composer_vs : '',
-      composer_fs : '',
-      vertical_glow_vs: '',
-      vertical_glow_fs: '',
-      horizontal_glow_vs: '',
-      horizontal_glow_fs: ''
-    },
-    './assets/shaders/',
-    () => {
-      domElement.nativeElement.appendChild(this._renderer.domElement);
-      this._controls = new THREE.OrbitControls(this._camera, this._renderer.domElement);
-    });
+    domElement.nativeElement.appendChild(this._renderer.domElement);
+    this._controls = new THREE.OrbitControls(this._camera, this._renderer.domElement);
   }
 
   public initData(flights: Flight[], airports: {[id: string]: Airport}) {
@@ -118,8 +107,8 @@ export class RenderService {
 
     let shader = new THREE.ShaderMaterial({
       uniforms: this._composerUniforms,
-      vertexShader: this._shaderLoader.get( "composer_vs" ),
-      fragmentShader: this._shaderLoader.get( "composer_fs" ),
+      vertexShader: composerVert,
+      fragmentShader: composerFrag,
       transparent: true,
       blending: THREE.AdditiveBlending
     });

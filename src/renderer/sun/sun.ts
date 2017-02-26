@@ -1,12 +1,10 @@
-import {FBO} from "../../models/FBO.model";
-import Blur from "../blur/blur";
+
+import Blur from "../utils/blur/blur";
 import {Settings} from "../settings";
 
 /*
  Shader imports
  */
-const glowVert = require('raw-loader!glslify-loader!./shaders/fbo.vert');
-const glowFrag = require('raw-loader!glslify-loader!./shaders/sun_glow.frag');
 const sunFrag = require('raw-loader!glslify-loader!./shaders/sun.frag');
 const sunVert = require('raw-loader!glslify-loader!./shaders/sun.vert');
 

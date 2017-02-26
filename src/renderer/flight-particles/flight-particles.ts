@@ -1,7 +1,6 @@
 import {spheriticalToCartesian} from "../../models/spheritical-to-cartesian.model";
 import {Airport} from "../../models/airport.model";
-import ShaderLoader from "../../models/shader-loader";
-import {FBO} from "../../models/FBO.model";
+import {FBO} from "../utils/fbo/fbo";
 import {Flight} from "../../services/flights/flight.model";
 
 /*
@@ -115,7 +114,6 @@ export default class FlightParticles {
     this._flightParticles = new THREE.Points(geometry, this._particlesRenderShader);
     this._group.add(this._flightParticles);
     this._currentTime = flightTextures.startTime;
-
 
 
     /*

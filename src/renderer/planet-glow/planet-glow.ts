@@ -1,4 +1,4 @@
-import Blur from "../blur/blur";
+import Blur from "../utils/blur/blur";
 import SphereGeometry = THREE.SphereGeometry;
 import ShaderMaterial = THREE.ShaderMaterial;
 import {Settings} from "../settings";

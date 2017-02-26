@@ -1,4 +1,4 @@
-import {FBO} from "../../models/FBO.model";
+import {FBO} from "../fbo/fbo";
 
 /*
  Shader imports

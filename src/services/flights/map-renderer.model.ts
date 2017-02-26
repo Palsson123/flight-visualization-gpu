@@ -10,27 +10,17 @@ export const MULTI_POLYGON = 'MultiPolygon';
 export const POLYGON = 'Polygon';
 
 export class MapRenderer extends RenderPass {
-  private _group: THREE.Group;
   private _sun: Sun;
   private _planet: Planet;
   private _planetGlow: PlanetGlow;
   private _stars: Stars;
   private _countryBorders: CountryBorders;
-  private _countryBorderLines: THREE.Line[];
-  private _lineMaterial: THREE.LineBasicMaterial;
 
   constructor(renderer: THREE.WebGLRenderer, camera: THREE.Camera) {
     super(renderer, new THREE.Scene(), camera);
 
-    this._group = new THREE.Group();
-    this._group.rotateX(-Math.PI / 1.4);
-    this._scene.add(this._group);
-
     this._sun = new Sun(renderer, camera);
     this._countryBorders = new CountryBorders(renderer, camera);
-
-    this._countryBorderLines = [];
-    this._lineMaterial = new THREE.LineBasicMaterial({ color: 0x999999 });
 
     this._planet = new Planet(renderer, camera);
     this._planetGlow = new PlanetGlow(renderer, camera);

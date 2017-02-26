@@ -12,7 +12,7 @@ varying vec2 vUv;
 //}
 
 void main() {
-    float blurFactor = 4.0;
+    float blurFactor = 2.0;
     vec3 clr = (
         texture2D( inputTexture, vUv + blurFactor * 2.0 * direction / resolution ).xyz +
         texture2D( inputTexture, vUv + blurFactor * 1.0 * direction / resolution ).xyz +

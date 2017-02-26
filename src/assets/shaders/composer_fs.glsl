@@ -22,5 +22,5 @@ void main(void) {
     vec3 borderColor = texture2D( countryBorders, vUv ).xyz;
     vec3 starsColor = texture2D( stars, vUv ).xyz;
 
-    gl_FragColor = vec4(0.15 * planetGlowColor + planetColor + starsColor + flightsColor + glowColor + mapColor + sunColor + borderColor, 1.0);
+    gl_FragColor = vec4(0.1 * planetGlowColor + planetColor + starsColor + flightsColor + glowColor + mapColor + sunColor + borderColor, 1.0);
 }

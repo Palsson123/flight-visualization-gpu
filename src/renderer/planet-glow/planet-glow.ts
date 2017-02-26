@@ -53,7 +53,7 @@ export default class PlanetGlow {
     this._normalsUniforms.sunPosition.value = sunPosition;
     this._renderer.render(this._scene, this._camera, this._normalsRenderTarget);
 
-    this._texture = this._blurPass.blurThisPlease(this._normalsRenderTarget.texture, 5);
+    this._texture = this._blurPass.blurThisPlease(this._normalsRenderTarget.texture, 3);
   }
 
   get texture() { return this._texture; }

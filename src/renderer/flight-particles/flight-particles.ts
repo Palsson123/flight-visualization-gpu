@@ -1,15 +1,18 @@
 import {spheriticalToCartesian} from "../../models/spheritical-to-cartesian.model";
-import {Flight} from "../flights/flight.model";
 import {Airport} from "../../models/airport.model";
 import ShaderLoader from "../../models/shader-loader";
 import {FBO} from "../../models/FBO.model";
+import {Flight} from "../../services/flights/flight.model";
 
 /*
-  Shader imports
+ Shader imports
  */
-const source = require('raw-loader!glslify-loader!./test.frag');
+const flightsVert = require('raw-loader!glslify-loader!./shaders/flights.vert');
+const flightsFrag = require('raw-loader!glslify-loader!./shaders/flights.frag');
+const flightsTrailFrag = require('raw-loader!glslify-loader!./shaders/flightsTrail.frag');
+const flightsTrailVert = require('raw-loader!glslify-loader!./shaders/flightsTrail.vert');
 
-export class FlightsParticleSystem {
+export default class FlightParticles {
   private _renderer: THREE.WebGLRenderer;
   private _scene: THREE.Scene;
   private _camera: THREE.Camera;
@@ -24,14 +27,6 @@ export class FlightsParticleSystem {
   private _flightTrailFBO: FBO;
   private _flightTrailShader: THREE.ShaderMaterial;
   private _flightTrailUniforms: any;
-
-  private _horizontalBlurFBO: FBO;
-  private _horizontalBlurShader: THREE.ShaderMaterial;
-  private _horizontalBlurUniforms: any;
-
-  private _verticalBlurFBO: FBO;
-  private _verticalBlurShader: THREE.ShaderMaterial;
-  private _verticalBlurUniforms: any;
 
   constructor(renderer: THREE.WebGLRenderer, camera: THREE.Camera) {
     this._scene = new THREE.Scene();
@@ -70,19 +65,9 @@ export class FlightsParticleSystem {
     this._flightTrailUniforms.cameraHasUpdated.value = 0.0;
 
     let blurTexture = this._flightTrailFBO.getTextureAtIndex(this._currentIndex);
-
-    for (let i = 0; i < 10; i++) {
-      this._horizontalBlurUniforms.inputTexture.value = blurTexture;
-      this._horizontalBlurFBO.render();
-
-      this._verticalBlurUniforms.inputTexture.value = this._horizontalBlurFBO.texture;
-      this._verticalBlurFBO.render();
-
-      blurTexture = this._verticalBlurFBO.texture;
-    }
   }
 
-  public init(flights: Flight[], airports: {[id: string]: Airport}, shaderLoader: ShaderLoader) {
+  public init(flights: Flight[], airports: {[id: string]: Airport}) {
     let width = window.innerWidth;
     let height = window.innerHeight;
 
@@ -109,8 +94,8 @@ export class FlightsParticleSystem {
 
     this._particlesRenderShader = new THREE.ShaderMaterial({
       uniforms: this._uniforms,
-      vertexShader: shaderLoader.get( "render_vs" ),
-      fragmentShader: shaderLoader.get( "render_fs" ),
+      vertexShader: flightsVert,
+      fragmentShader: flightsFrag,
       transparent: true,
       blending: THREE.AdditiveBlending
     });
@@ -143,48 +128,13 @@ export class FlightsParticleSystem {
     };
     this._flightTrailShader = new THREE.ShaderMaterial({
       uniforms: this._flightTrailUniforms,
-      vertexShader: shaderLoader.get( 'flight_trail_vs' ),
-      fragmentShader: shaderLoader.get( 'flight_trail_fs' ),
+      vertexShader: flightsTrailVert,
+      fragmentShader: flightsTrailFrag,
       transparent: true,
       blending: THREE.AdditiveBlending
     });
     this._flightTrailShader.needsUpdate = true;
     this._flightTrailFBO = new FBO(window.innerWidth, window.innerHeight, this._renderer, this._flightTrailShader, 2);
-
-
-    /*
-     Horizontal glow fbo
-     */
-    this._horizontalBlurUniforms = {
-      inputTexture: { value: null },
-      size: { type: 'v2', value: new THREE.Vector2(window.innerWidth, window.innerHeight) }
-    };
-    this._horizontalBlurShader = new THREE.ShaderMaterial({
-      uniforms: this._horizontalBlurUniforms,
-      vertexShader: shaderLoader.get( 'horizontal_glow_vs' ),
-      fragmentShader: shaderLoader.get( 'horizontal_glow_fs' ),
-      transparent: true,
-      blending: THREE.AdditiveBlending
-    });
-    this._horizontalBlurShader.needsUpdate = true;
-    this._horizontalBlurFBO = new FBO(window.innerWidth, window.innerHeight, this._renderer, this._horizontalBlurShader);
-
-    /*
-     Vertical glow fbo
-     */
-    this._verticalBlurUniforms = {
-      inputTexture: { value: null },
-      size: { type: 'v2', value: new THREE.Vector2(window.innerWidth, window.innerHeight) }
-    };
-    this._verticalBlurShader = new THREE.ShaderMaterial({
-      uniforms: this._verticalBlurUniforms,
-      vertexShader: shaderLoader.get( 'vertical_glow_vs' ),
-      fragmentShader: shaderLoader.get( 'vertical_glow_fs' ),
-      transparent: true,
-      blending: THREE.AdditiveBlending
-    });
-    this._verticalBlurShader.needsUpdate = true;
-    this._verticalBlurFBO = new FBO(window.innerWidth, window.innerHeight, this._renderer, this._verticalBlurShader);
   }
 
   private generateFlightTextures(flights: Flight[], airports: {[id: string]: Airport}, width, height) {
@@ -253,10 +203,6 @@ export class FlightsParticleSystem {
 
   get texture() {
     return this._flightTrailFBO.getTextureAtIndex(this._currentIndex);
-  }
-
-  get glowTexture() {
-    return this._verticalBlurFBO.getTextureAtIndex(0);
   }
 
   get renderTarget(): THREE.WebGLRenderTarget {

@@ -6,6 +6,7 @@ import ShaderLoader from "../models/shader-loader";
 import {Flight} from "./flights/flight.model";
 import {Airport} from "../models/airport.model";
 import {FlightsParticleSystem} from "./renderer/flights-particle-system.model";
+import FlightParticles from "../renderer/flight-particles/flight-particles";
 const Stats = require('stats-js');
 
 @Injectable()
@@ -18,8 +19,7 @@ export class RenderService {
   private _mapRenderer: MapRenderer;
   private _renderTarget: THREE.WebGLRenderTarget;
 
-  //private _renderShader: THREE
-  private _flightsParticleSystem: FlightsParticleSystem;
+  private _flightParticles: FlightParticles;
 
   private _fbo: FBO;
   private _composerUniforms: any;
@@ -33,7 +33,7 @@ export class RenderService {
     this._camera.lookAt(new THREE.Vector3(0,0,0));
 
     this._stats = new Stats();
-    this._stats.setMode(0); // 0: fps, 1: ms
+    this._stats.setMode(0);
     this._stats.domElement.style.position = 'absolute';
     this._stats.domElement.style.left = '0px';
     this._stats.domElement.style.top = '0px';
@@ -50,7 +50,7 @@ export class RenderService {
     });
 
 
-    this._flightsParticleSystem = new FlightsParticleSystem(this._renderer, this._camera);
+    this._flightParticles = new FlightParticles(this._renderer, this._camera);
   }
 
   private time = 0.0;
@@ -59,16 +59,16 @@ export class RenderService {
     requestAnimationFrame( this.render );
 
     this._controls.update();
+    this._flightParticles.update();
+    this._composerUniforms.flights.value = this._flightParticles.texture;
+    //his._composerUniforms.flightsGlow.value = this._flightParticles.glowTexture;
 
     this._mapRenderer.update(this.time);
     this._mapRenderer.render();
-    this._composerUniforms.map.value = this._mapRenderer.texture;
 
-    //this._flightsParticleSystem.update();
+    this._composerUniforms.map.value = this._mapRenderer.texture;
     this._composerUniforms.planet.value = this._mapRenderer.planetTexture;
     this._composerUniforms.planetGlow.value = this._mapRenderer.planetGlowTexture;
-    //this._composerUniforms.flights.value = this._flightsParticleSystem.texture;
-    //this._composerUniforms.flightsGlow.value = this._flightsParticleSystem.glowTexture;
     this._composerUniforms.stars.value = this._mapRenderer.starsTexture;
     this._composerUniforms.sun.value = this._mapRenderer.sunTexture;
     this._composerUniforms.countryBorders.value = this._mapRenderer.borderTexture;
@@ -84,12 +84,8 @@ export class RenderService {
     this._shaderLoader.loadShaders({
       simulation_vs : '',
       simulation_fs : '',
-      render_vs : '',
-      render_fs : '',
       composer_vs : '',
       composer_fs : '',
-      flight_trail_vs: '',
-      flight_trail_fs: '',
       vertical_glow_vs: '',
       vertical_glow_fs: '',
       horizontal_glow_vs: '',
@@ -106,7 +102,7 @@ export class RenderService {
     this._mapRenderer = new MapRenderer(this._renderer, this._camera);
     this.dataService.features.subscribe((features: IFeature[]) => this._mapRenderer.drawMap(features));
 
-    //this._flightsParticleSystem.init(flights, airports, this._shaderLoader);
+    this._flightParticles.init(flights, airports);
 
     this._composerUniforms = {
       flights: { value: null },

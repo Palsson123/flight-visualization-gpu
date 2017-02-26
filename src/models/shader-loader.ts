@@ -1,6 +1,7 @@
 /**
  * Created by fille on 2017-02-16.
  */
+const glsl = require('glslify');
 
 export default class ShaderLoader {
   private _baseUrl: string;
@@ -21,7 +22,7 @@ export default class ShaderLoader {
 
       let loadHandler = ( name, req ) => {
         return () => {
-          this._shaders[name] = req.responseText;
+          this._shaders[name] = glsl(req.responseText);
           if ( --queue <= 0 ) this._callback();
         };
       };

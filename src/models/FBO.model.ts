@@ -46,8 +46,6 @@ export class FBO {
       }));
     }
 
-    console.log(this._renderTargets.length);
-
     this._fboScene = new THREE.Scene();
     let geometry = new THREE.PlaneGeometry( 2, 2, 2 );
     let plane = new THREE.Mesh( geometry, shader );

@@ -29,3 +29,13 @@ import {FlightsService} from "../services/flights/flights.service";
   bootstrap: [AppComponent]
 })
 export class AppModule { }
+
+
+// module.exports = {
+//   module: {
+//     loaders: [
+//       { test: /\.(glsl|frag|vert)$/, loader: 'raw', exclude: /node_modules/ },
+//       { test: /\.(glsl|frag|vert)$/, loader: 'glslify', exclude: /node_modules/ }
+//     ]
+//   }
+// }

@@ -14,7 +14,7 @@ export class DataService {
   private _airports: Observable<any>;
 
   constructor(private http: Http) {
-    this._flights = this.http.get('../../assets/data/march_2016.csv').map((res: any) => {
+    this._flights = this.http.get('../../assets/data/march_2016-2.csv').map((res: any) => {
       let flights: Flight[] = [];
       for (let flightJSON of d3.csvParse(res._body)) {
         flights.push(Flight.CreateFromJSON(flightJSON));

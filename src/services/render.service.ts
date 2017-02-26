@@ -54,8 +54,11 @@ export class RenderService {
     this._composerUniforms.map.value = this._mapRenderer.texture;
 
     this._flightsParticleSystem.update();
+    this._composerUniforms.planet.value = this._mapRenderer.planetTexture;
     this._composerUniforms.flights.value = this._flightsParticleSystem.texture;
     this._composerUniforms.flightsGlow.value = this._flightsParticleSystem.glowTexture;
+    this._composerUniforms.sun.value = this._mapRenderer.sunTexture;
+    this._composerUniforms.countryBorders.value = this._mapRenderer.borderTexture;
 
     this._fbo.renderToViewport();
 
@@ -76,9 +79,7 @@ export class RenderService {
       vertical_glow_vs: '',
       vertical_glow_fs: '',
       horizontal_glow_vs: '',
-      horizontal_glow_fs: '',
-      earth_vs: '',
-      earth_fs: ''
+      horizontal_glow_fs: ''
     },
     './assets/shaders/',
     () => {
@@ -88,7 +89,7 @@ export class RenderService {
   }
 
   public initData(flights: Flight[], airports: {[id: string]: Airport}) {
-    this._mapRenderer = new MapRenderer(this._renderer, this._camera, this._shaderLoader);
+    this._mapRenderer = new MapRenderer(this._renderer, this._camera);
     this.dataService.features.subscribe((features: IFeature[]) => this._mapRenderer.drawMap(features));
 
     this._flightsParticleSystem.init(flights, airports, this._shaderLoader);
@@ -96,7 +97,10 @@ export class RenderService {
     this._composerUniforms = {
       flights: { value: null },
       flightsGlow: { value: null },
+      planet: { value: null },
+      sun: { value: null },
       map: { value: null },
+      countryBorders: { value: null },
       size: { type: "v2", value: new THREE.Vector2(window.innerWidth, window.innerHeight) }
     };
 

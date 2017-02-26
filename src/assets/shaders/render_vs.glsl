@@ -28,6 +28,7 @@ void main() {
 
     float flightDepartureTime = texture2D(flightTimes, position.xy).x;
     float flightArrivalTime = texture2D(flightTimes, position.xy).y;
+    //float flightTime = clamp((currentTime - flightDepartureTime) / (flightArrivalTime - flightDepartureTime), 0.0, 1.0);
     float flightTime = clamp((currentTime - flightDepartureTime) / endTime, 0.0, 1.0);
 
 

@@ -28,6 +28,10 @@ module.exports = function (config) {
       config: './angular-cli.json',
       environment: 'dev'
     },
+    loaders: [
+      { test: /\.(glsl|frag|vert)$/, loader: 'raw', exclude: /node_modules/ },
+      { test: /\.(glsl|frag|vert)$/, loader: 'glslify', exclude: /node_modules/ }
+    ],
     reporters: config.angularCli && config.angularCli.codeCoverage
               ? ['progress', 'coverage-istanbul']
               : ['progress'],

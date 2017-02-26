@@ -17,13 +17,12 @@ export class Flight {
   }
 
   static CreateFromJSON(json: any): Flight {
-    let deparuteDateString = json.FL_DATE + 'T' + json.DEP_TIME.slice(0,2) + ':' + json.DEP_TIME.slice(2,4);
-
+    let deparuteDateString = json.FL_DATE + ' ' + json.DEP_TIME.slice(0,2) + ':' + json.DEP_TIME.slice(2,4);
     return new Flight(
       json.CARRIER,
-      moment(deparuteDateString).unix(),
+      moment(deparuteDateString, 'YYYY-MM-DD hh:mm').unix(),
       json.ORIGIN,
-      moment(deparuteDateString).unix() + parseFloat(json.ACTUAL_ELAPSED_TIME) / 100 * 60 * 60,
+      moment(deparuteDateString, 'YYYY-MM-DD hh:mm').unix() + parseFloat(json.ACTUAL_ELAPSED_TIME) / 100 * 60 * 60,
       json.DEST
     );
   }

@@ -9,7 +9,7 @@ varying vec2 vUv;
 
 void main(void) {
     vec3 currentFlights = texture2D(flightTrail, vUv).xyz;
-    vec3 flightTrail = texture2D(accumulatedFlightTrail, vUv).xyz * vec3(0.993, 0.98, 0.96);
+    vec3 flightTrail = texture2D(accumulatedFlightTrail, vUv).xyz * vec3(0.99, 0.98, 0.97);
 
     if ( cameraHasUpdated == 1.0) {
         flightTrail = vec3(0,0,0);

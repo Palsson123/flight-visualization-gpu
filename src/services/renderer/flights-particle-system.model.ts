@@ -3,7 +3,11 @@ import {Flight} from "../flights/flight.model";
 import {Airport} from "../../models/airport.model";
 import ShaderLoader from "../../models/shader-loader";
 import {FBO} from "../../models/FBO.model";
-import RenderPass from "../../models/render-pass";
+
+/*
+  Shader imports
+ */
+const source = require('raw-loader!glslify-loader!./test.frag');
 
 export class FlightsParticleSystem {
   private _renderer: THREE.WebGLRenderer;
@@ -35,6 +39,9 @@ export class FlightsParticleSystem {
     this._group.rotateX(-Math.PI / 1.4);
     this._scene.add(this._group);
 
+    let sphere = new THREE.Mesh(new THREE.SphereGeometry(10,32,32), new THREE.MeshBasicMaterial({color: 0x000000}));
+    this._scene.add(sphere);
+
     this._renderer = renderer;
     this._camera = camera;
     this._lastCameraPosition = new THREE.Vector3(this._camera.position.x, this._camera.position.y, this._camera.position.z);
@@ -42,7 +49,9 @@ export class FlightsParticleSystem {
 
   private _currentIndex = 0;
   public update() {
+    //this._currentTime += 0.01;
     this._currentTime += 100;
+
     this._uniforms.currentTime.value = this._currentTime;
     this._renderer.render(this._scene, this._camera, this._renderTarget);
 
@@ -92,9 +101,9 @@ export class FlightsParticleSystem {
       flightTimes: { value: flightTextures.flightTimes },
       positions: { value: flightTextures.departurePositions },
       pointSize: { value: 2 },
-      startTime: { value: flightTextures.startTime / 10000.0 },
-      endTime: { value: flightTextures.endTime / 10000.0 },
-      currentTime: { value: flightTextures.startTime / 10000.0 }
+      startTime: { value: flightTextures.startTime },
+      endTime: { value: flightTextures.endTime },
+      currentTime: { value: flightTextures.startTime}
     };
 
     this._particlesRenderShader = new THREE.ShaderMaterial({
@@ -119,7 +128,9 @@ export class FlightsParticleSystem {
 
     this._flightParticles = new THREE.Points(geometry, this._particlesRenderShader);
     this._group.add(this._flightParticles);
-    this._currentTime = flightTextures.startTime / 10000.0;
+    this._currentTime = flightTextures.startTime;
+
+
 
     /*
      Trail fbo
@@ -191,37 +202,43 @@ export class FlightsParticleSystem {
       let departureAirport = airports[flight.departureAirportId];
       let arrivalAirport = airports[flight.arrivalAirportId];
 
-      let departurePos = spheriticalToCartesian(departureAirport.coordinate[0], departureAirport.coordinate[1], 10);
-      let arrivalPos = spheriticalToCartesian(arrivalAirport.coordinate[0], arrivalAirport.coordinate[1], 10);
-      let midPos = departurePos.clone().add(arrivalPos).multiplyScalar(0.5).normalize().multiplyScalar(11);
+      if (departureAirport && arrivalAirport) {
+        let departurePos = spheriticalToCartesian(departureAirport.coordinate[0], departureAirport.coordinate[1], 10);
+        let arrivalPos = spheriticalToCartesian(arrivalAirport.coordinate[0], arrivalAirport.coordinate[1], 10);
+        let midPos = departurePos.clone().add(arrivalPos).multiplyScalar(0.5).normalize().multiplyScalar(11);
 
-      departurePositions[i] = departurePos.x;
-      midPointPositions[i] = midPos.x;
-      arrivalPositions[i] = arrivalPos.x;
+        departurePositions[i] = departurePos.x;
+        midPointPositions[i] = midPos.x;
+        arrivalPositions[i] = arrivalPos.x;
 
-      departurePositions[i + 1] = departurePos.y;
-      midPointPositions[i + 1] = midPos.y;
-      arrivalPositions[i + 1] = arrivalPos.y;
+        departurePositions[i + 1] = departurePos.y;
+        midPointPositions[i + 1] = midPos.y;
+        arrivalPositions[i + 1] = arrivalPos.y;
 
-      departurePositions[i + 2] = departurePos.z;
-      midPointPositions[i + 2] = midPos.z;
-      arrivalPositions[i + 2] = arrivalPos.z;
+        departurePositions[i + 2] = departurePos.z;
+        midPointPositions[i + 2] = midPos.z;
+        arrivalPositions[i + 2] = arrivalPos.z;
 
-      flightTimes[i] = flight.departureTime / 10000.0;
-      flightTimes[i + 1] = flight.arrivalTime / 10000.0;
-      flightTimes[i + 2] = 0;
+        flightTimes[i] = flight.departureTime / 10000.0;
+        flightTimes[i + 1] = flight.arrivalTime / 10000.0;
+        flightTimes[i + 2] = 0;
 
-      startTime = flight.departureTime < startTime ? flight.departureTime : startTime;
-      endTime = flight.arrivalTime > endTime ? flight.arrivalTime : endTime;
+        //console.log(flightTimes[i], flightTimes[i + 1])
+
+        startTime = flight.departureTime < startTime ? flight.departureTime : startTime;
+        endTime = flight.arrivalTime > endTime ? flight.arrivalTime : endTime;
+      }
     }
+
+    console.log(startTime / 10000.0  , endTime / 10000.0 )
 
     return {
       departurePositions: this.generateDataTexture(departurePositions, width, height),
       midPointPositions: this.generateDataTexture(midPointPositions, width, height),
       arrivalPositions: this.generateDataTexture(arrivalPositions, width, height),
       flightTimes: this.generateDataTexture(flightTimes, width, height),
-      startTime: startTime,
-      endTime: endTime
+      startTime: startTime / 10000.0 ,
+      endTime: endTime / 10000.0
     }
   }
 

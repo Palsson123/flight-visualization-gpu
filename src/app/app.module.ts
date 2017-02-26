@@ -6,7 +6,7 @@ import {HttpModule, Http} from '@angular/http';
 import { MaterialModule } from '@angular/material';
 
 import { AppComponent } from './app.component';
-import {RenderService} from "../services/render.service";
+import {RenderService} from "../services/renderer/render.service";
 import {LoaderService} from "../services/loader/loader.service";
 import {DataService} from "../services/data.service";
 import {MapService} from "../services/map.service";

@@ -3,7 +3,7 @@ import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/catch';
 import {DataService} from "../data.service";
 import {Flight} from "./flight.model";
-import {RenderService} from "../render.service";
+import {RenderService} from "../renderer/render.service";
 import {Airport} from "../../models/airport.model";
 import {AirportsRenderer} from "./airports-renderer.model";
 import {FlightsRenderer} from "./airports-renderer";

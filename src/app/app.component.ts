@@ -1,5 +1,5 @@
 import {Component, AfterViewInit, ViewChild, ElementRef} from '@angular/core';
-import {RenderService} from "../services/render.service";
+import {RenderService} from "../services/renderer/render.service";
 import {MapService} from "../services/map.service";
 import {FlightsService} from "../services/flights/flights.service";
 

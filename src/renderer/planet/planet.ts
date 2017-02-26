@@ -1,6 +1,7 @@
 /*
   Shader imports
  */
+import {Settings} from "../settings";
 const planetVert = require('raw-loader!glslify-loader!./shaders/planet.vert');
 const planetFrag = require('raw-loader!glslify-loader!./shaders/planet.frag');
 
@@ -18,7 +19,7 @@ export default class Planet {
     this._scene = new THREE.Scene();
     this._scene.rotateX(-Math.PI / 1.4);
 
-    this._geometry = new THREE.SphereBufferGeometry(10, 128, 128);
+    this._geometry = new THREE.SphereBufferGeometry(10, 64, 64);
     this.computeTangents();
 
     let earthColorMap = new THREE.TextureLoader().load('./assets/textures/world_clr_map.jpg');
@@ -33,15 +34,10 @@ export default class Planet {
     earthHeightMap.wrapS = THREE.RepeatWrapping;
     earthHeightMap.wrapT = THREE.RepeatWrapping;
 
-    let earthNormalMap = new THREE.TextureLoader().load('./assets/textures/world_normal_map.jpg');
-    earthNormalMap.wrapS = THREE.RepeatWrapping;
-    earthNormalMap.wrapT = THREE.RepeatWrapping;
-
     this._uniforms = {
       earthColorMap: { value: earthColorMap },
       earthMaskMap: { value: earthMaskMap },
       earthHeightMap: { value: earthHeightMap },
-      earthNormalMap: { value: earthNormalMap },
       sunPosition: { type: 'v3', value: new THREE.Vector3(0,0,0) },
       time: { type: 'f', value: 0.0 }
     };
@@ -57,7 +53,7 @@ export default class Planet {
     earthMesh.rotation.set(Math.PI / 2.0, 0.0, Math.PI);
     this._scene.add(earthMesh);
 
-    this._renderTarget = new THREE.WebGLRenderTarget(window.innerWidth, window.innerHeight, {
+    this._renderTarget = new THREE.WebGLRenderTarget(Settings.width, Settings.height, {
       minFilter: THREE.NearestFilter,
       magFilter: THREE.NearestFilter,
       format: THREE.RGBFormat,

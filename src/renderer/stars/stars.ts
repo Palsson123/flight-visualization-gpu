@@ -1,7 +1,8 @@
 import ShaderMaterial = THREE.ShaderMaterial;
 import {invertNormals} from "../utils/invertNormals";
-import Blur from "../blur/blur";
-import {FBO} from "../../models/FBO.model";
+import Blur from "../utils/blur/blur";
+import {FBO} from "../utils/fbo/fbo";
+import {Settings} from "../settings";
 
 /*
  Shader imports
@@ -22,8 +23,8 @@ export default class Stars {
   constructor(private _renderer: THREE.WebGLRenderer, private _camera: THREE.Camera) {
     this._scene = new THREE.Scene();
 
-    let width = window.innerWidth;
-    let height = window.innerHeight;
+    let width = Settings.width;
+    let height = Settings.height;
     this._starsRenderTarget = new THREE.WebGLRenderTarget(width, height, {
       minFilter: THREE.NearestFilter,
       magFilter: THREE.NearestFilter,
@@ -65,7 +66,7 @@ export default class Stars {
 
   public render() {
     this._renderer.render(this._scene, this._camera, this._starsRenderTarget);
-    this._starsCompositionUniforms.glow.value = this._starsGlow.blurThisPlease(this._starsRenderTarget.texture, 5.0);
+    this._starsCompositionUniforms.glow.value = this._starsGlow.blurThisPlease(this._starsRenderTarget.texture, Settings.starsGlowIterations);
     this._starsCompositionUniforms.stars.value = this._starsRenderTarget.texture;
     this._starsCompositionFBO.render();
   }

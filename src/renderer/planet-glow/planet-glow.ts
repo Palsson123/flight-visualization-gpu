@@ -1,6 +1,7 @@
-import Blur from "../blur/blur";
+import Blur from "../utils/blur/blur";
 import SphereGeometry = THREE.SphereGeometry;
 import ShaderMaterial = THREE.ShaderMaterial;
+import {Settings} from "../settings";
 
 /*
  Shader imports
@@ -23,8 +24,8 @@ export default class PlanetGlow {
     this._camera = camera;
     this._scene = new THREE.Scene();
 
-    let width = window.innerWidth;
-    let height = window.innerHeight;
+    let width = Settings.width;
+    let height = Settings.height;
 
     this._normalsUniforms = {
       sunPosition: { type: 'v3', value: null }
@@ -46,7 +47,7 @@ export default class PlanetGlow {
       type: THREE.FloatType,
     });
 
-    this._blurPass = new Blur(renderer, camera, 4.0);
+    this._blurPass = new Blur(renderer, camera, Settings.planetGlowIterations);
   }
 
   public render(planetTexture: THREE.Texture, sunPosition: THREE.Vector3) {

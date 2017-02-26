@@ -40,18 +40,6 @@ void main() {
     vNormal = vec3(modelMatrix * vec4(normal, 1.0));
     vPosition = vec3(modelMatrix * vec4(position, 1.0));
 
-
-//    vec3 tangent;
-//    vec3 binormal;
-//    calculateTangents(tangent, binormal);
-
     vTangent = vec3(modelMatrix * vec4(normalize(tangent), 1.0));
     vBitangent = vec3(modelMatrix * vec4(normalize(bitangent), 1.0));
-
-
-    // Calculate tangent vectors
-//    float theta = acos(vPosition.z / 10.0);
-//    float phi = atan(vPosition.y, vPosition.x) + 3.14 / 2.0;
-//    vVs = vec3(sin(theta) * cos(phi), sin(theta) * sin(phi), cos(theta));
-//    vVt = cross(vNormal, vVs);
 }

@@ -27,7 +27,7 @@ export class RenderService {
     this._scene = new THREE.Scene();
 
     this._camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    this._camera.position.z = -15;
+    this._camera.position.z = -25;
     this._camera.lookAt(new THREE.Vector3(0,0,0));
 
     this._renderer = new THREE.WebGLRenderer();
@@ -55,8 +55,10 @@ export class RenderService {
 
     this._flightsParticleSystem.update();
     this._composerUniforms.planet.value = this._mapRenderer.planetTexture;
+    this._composerUniforms.planetGlow.value = this._mapRenderer.planetGlowTexture;
     this._composerUniforms.flights.value = this._flightsParticleSystem.texture;
     this._composerUniforms.flightsGlow.value = this._flightsParticleSystem.glowTexture;
+    this._composerUniforms.stars.value = this._mapRenderer.starsTexture;
     this._composerUniforms.sun.value = this._mapRenderer.sunTexture;
     this._composerUniforms.countryBorders.value = this._mapRenderer.borderTexture;
 
@@ -98,6 +100,8 @@ export class RenderService {
       flights: { value: null },
       flightsGlow: { value: null },
       planet: { value: null },
+      planetGlow: { value: null },
+      stars: { value: null },
       sun: { value: null },
       map: { value: null },
       countryBorders: { value: null },

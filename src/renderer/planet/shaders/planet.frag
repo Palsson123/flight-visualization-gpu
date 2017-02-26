@@ -30,17 +30,19 @@ vec3 phong(vec3 ka, vec3 kd, vec3 ks, float alpha, vec3 normal) {
 
 vec3 water() {
     vec3 ambient = vec3(0.0);
-    vec3 diffuse = vec3(0.0, 0.05, 0.1);
+    vec3 diffuse = vec3(0.0, 0.03, 0.07);
     vec3 specular = vec3(0.5, 0.5, 0.5);
 
+    float freqFactor = 2.0;
+
     float offset = 1.0 / 2048.0;
-    float waterFreq = 6.0;
+    float waterFreq = 6.0 * freqFactor;
     float waterSpeed = 0.2;
 
     float ds1 = snoise3(vPosition * waterFreq + vec3(time * waterSpeed) + offset * vTangent) - snoise3(vPosition * waterFreq + vec3(time * waterSpeed) - offset * vTangent);
     float dt1 = snoise3(vPosition * waterFreq + vec3(time * waterSpeed) + offset * vBitangent) - snoise3(vPosition * waterFreq + vec3(time * waterSpeed) - offset * vBitangent);
 
-    float mediumWaterFreq = 3.0;
+    float mediumWaterFreq = 3.0 * freqFactor;
     float mediumWaterSpeed = 0.4;
 
     float ds2 = snoise3(vPosition * mediumWaterFreq - vec3(time * mediumWaterSpeed) + offset * vTangent) - snoise3(vPosition * mediumWaterFreq - vec3(time * mediumWaterSpeed) - offset * vTangent);

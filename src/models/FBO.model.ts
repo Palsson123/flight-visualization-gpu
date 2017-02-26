@@ -67,7 +67,7 @@ export class FBO {
   }
 
 
-  get texture() {
+  get texture(): THREE.Texture {
     return this._renderTargets[0].texture;
   }
 

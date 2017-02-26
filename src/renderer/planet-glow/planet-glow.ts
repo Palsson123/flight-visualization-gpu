@@ -1,23 +1,22 @@
-import {FBO} from "../../models/FBO.model";
-/**
- * Created by fille on 2017-02-25.
- */
+import Blur from "../blur/blur";
+import SphereGeometry = THREE.SphereGeometry;
+import ShaderMaterial = THREE.ShaderMaterial;
 
+/*
+ Shader imports
+ */
+const normalVert = require('raw-loader!glslify-loader!./shaders/planetNormals.vert');
+const normalFrag = require('raw-loader!glslify-loader!./shaders/planetNormals.frag');
 
 export default class PlanetGlow {
+  private _texture: THREE.Texture;
   private _renderer: THREE.WebGLRenderer;
   private _camera: THREE.Camera;
   private _scene: THREE.Scene;
-  private _planetRenderTarget: THREE.WebGLRenderTarget;
 
-  private _planetThresholdFBO: FBO;
-  private _planetThresholdUniforms: any;
-
-  private _planetVerticalBlurFBO: FBO;
-  private _planetVerticalBlurUniforms: any;
-
-  private _planetHorizontalBlurFBO: FBO;
-  private _planetHoirzontalBlurUniforms: any;
+  private _normalsRenderTarget: THREE.WebGLRenderTarget;
+  private _normalsUniforms: any;
+  private _blurPass: Blur;
 
   constructor(renderer: THREE.WebGLRenderer, camera: THREE.Camera) {
     this._renderer = renderer;
@@ -26,27 +25,36 @@ export default class PlanetGlow {
 
     let width = window.innerWidth;
     let height = window.innerHeight;
-    this._planetRenderTarget = new THREE.WebGLRenderTarget(width, height, {
+
+    this._normalsUniforms = {
+      sunPosition: { type: 'v3', value: null }
+    };
+
+    let planetNormalsShader = new ShaderMaterial({
+      uniforms: this._normalsUniforms,
+      vertexShader: normalVert,
+      fragmentShader: normalFrag,
+      blending: THREE.AdditiveBlending
+    });
+    let sphere = new THREE.Mesh(new SphereGeometry(10.2, 32, 32), planetNormalsShader);
+    this._scene.add(sphere);
+
+    this._normalsRenderTarget = new THREE.WebGLRenderTarget(width, height, {
       minFilter: THREE.NearestFilter,
       magFilter: THREE.NearestFilter,
       format: THREE.RGBFormat,
       type: THREE.FloatType,
     });
 
-    this._planetThresholdUniforms = {
-      threshold: { type: 'f', value: 0.7 }
-    };
-
-    // let earthShader = new THREE.ShaderMaterial({
-    //   uniforms: this._uniforms,
-    //   vertexShader: planetVert,
-    //   fragmentShader: planetFrag,
-    //   blending: THREE.AdditiveBlending
-    // });
-
+    this._blurPass = new Blur(renderer, camera, 4.0);
   }
 
-  public render(time: number) {
+  public render(planetTexture: THREE.Texture, sunPosition: THREE.Vector3) {
+    this._normalsUniforms.sunPosition.value = sunPosition;
+    this._renderer.render(this._scene, this._camera, this._normalsRenderTarget);
 
+    this._texture = this._blurPass.blurThisPlease(this._normalsRenderTarget.texture, 5);
   }
+
+  get texture() { return this._texture; }
 }

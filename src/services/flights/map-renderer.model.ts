@@ -3,6 +3,8 @@ import RenderPass from "../../models/render-pass";
 import Planet from "../../renderer/planet/planet";
 import Sun from "../../renderer/sun/sun";
 import CountryBorders from "../../renderer/country-borders/country-borders";
+import PlanetGlow from "../../renderer/planet-glow/planet-glow";
+import Stars from "../../renderer/stars/stars";
 
 export const MULTI_POLYGON = 'MultiPolygon';
 export const POLYGON = 'Polygon';
@@ -10,7 +12,9 @@ export const POLYGON = 'Polygon';
 export class MapRenderer extends RenderPass {
   private _group: THREE.Group;
   private _sun: Sun;
-  private _planetMesh: Planet;
+  private _planet: Planet;
+  private _planetGlow: PlanetGlow;
+  private _stars: Stars;
   private _countryBorders: CountryBorders;
   private _countryBorderLines: THREE.Line[];
   private _lineMaterial: THREE.LineBasicMaterial;
@@ -26,15 +30,23 @@ export class MapRenderer extends RenderPass {
     this._countryBorders = new CountryBorders(renderer, camera);
 
     this._countryBorderLines = [];
-    this._lineMaterial = new THREE.LineBasicMaterial({ color: 0x666666 });
+    this._lineMaterial = new THREE.LineBasicMaterial({ color: 0x999999 });
 
-    this._planetMesh = new Planet(renderer, camera);
+    this._planet = new Planet(renderer, camera);
+    this._planetGlow = new PlanetGlow(renderer, camera);
+
+    this._stars = new Stars(renderer, camera);
   }
 
   public update(time: number) {
     this._sun.render(time);
     this._sun.position.set(80 * Math.cos(time * 0.5), 0.0, 80 * Math.sin(time * 0.5));
-    this._planetMesh.render(time, this._sun.position);
+
+    this._planet.render(time, this._sun.position);
+    this._planetGlow.render(this._planet.texture, this._sun.position);
+
+    this._stars.render();
+
     this._countryBorders.render();
   }
 
@@ -51,7 +63,9 @@ export class MapRenderer extends RenderPass {
     }
   }
 
-  get planetTexture() { return this._planetMesh.texture }
+  get planetTexture() { return this._planet.texture }
+  get planetGlowTexture() { return this._planetGlow.texture }
   get sunTexture() { return this._sun.texture; }
+  get starsTexture(): THREE.Texture { return this._stars.texture; }
   get borderTexture() { return this._countryBorders.texture; }
 }

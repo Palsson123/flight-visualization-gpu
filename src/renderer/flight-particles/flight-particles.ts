@@ -2,6 +2,7 @@ import {spheriticalToCartesian} from "../../models/spheritical-to-cartesian.mode
 import {Airport} from "../../models/airport.model";
 import {FBO} from "../utils/fbo/fbo";
 import {Flight} from "../../services/flights/flight.model";
+import {Settings} from "../settings";
 
 /*
  Shader imports
@@ -67,8 +68,8 @@ export default class FlightParticles {
   }
 
   public init(flights: Flight[], airports: {[id: string]: Airport}) {
-    let width = window.innerWidth;
-    let height = window.innerHeight;
+    let width = Settings.width;
+    let height = Settings.height;
 
     let flightTextures = this.generateFlightTextures(flights, airports, width, height);
 

@@ -43,8 +43,8 @@ export default class Sun {
     let sphere = new THREE.Mesh(new THREE.SphereGeometry(10,32,32), new THREE.MeshBasicMaterial({color: 0x000000}));
     this._scene.add(sphere);
 
-    let width = window.innerWidth;
-    let height = window.innerHeight;
+    let width = Settings.width;
+    let height = Settings.height;
 
     this._sunRenderTarget = new THREE.WebGLRenderTarget(width, height, {
       minFilter: THREE.LinearFilter,

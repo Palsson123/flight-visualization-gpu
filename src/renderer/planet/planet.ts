@@ -1,6 +1,7 @@
 /*
   Shader imports
  */
+import {Settings} from "../settings";
 const planetVert = require('raw-loader!glslify-loader!./shaders/planet.vert');
 const planetFrag = require('raw-loader!glslify-loader!./shaders/planet.frag');
 
@@ -52,7 +53,7 @@ export default class Planet {
     earthMesh.rotation.set(Math.PI / 2.0, 0.0, Math.PI);
     this._scene.add(earthMesh);
 
-    this._renderTarget = new THREE.WebGLRenderTarget(window.innerWidth, window.innerHeight, {
+    this._renderTarget = new THREE.WebGLRenderTarget(Settings.width, Settings.height, {
       minFilter: THREE.NearestFilter,
       magFilter: THREE.NearestFilter,
       format: THREE.RGBFormat,

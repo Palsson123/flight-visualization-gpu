@@ -1,4 +1,5 @@
 import {FBO} from "../fbo/fbo";
+import {Settings} from "../../settings";
 
 /*
  Shader imports
@@ -22,18 +23,18 @@ export default class Blur {
     this._camera = camera;
     this._scene = new THREE.Scene();
 
-    let width = window.innerWidth;
-    let height = window.innerHeight;
+    let width = Settings.width / 2;
+    let height = Settings.height / 2;
 
     this._verticalBlurUniforms = {
-      resolution: { type: 'v2', value: new THREE.Vector2(window.innerWidth, window.innerHeight)},
+      resolution: { type: 'v2', value: new THREE.Vector2(width, height)},
       direction: { type: 'v2', value: new THREE.Vector2(0, 1) },
       blurSize: { type: 'f', value: blurSize },
       inputTexture: { value: null },
     };
 
     this._horizontalBlurUniforms = {
-      resolution: { type: 'v2', value: new THREE.Vector2(window.innerWidth, window.innerHeight)},
+      resolution: { type: 'v2', value: new THREE.Vector2(width, height)},
       direction: { type: 'v2', value: new THREE.Vector2(1, 0) },
       blurSize: { type: 'f', value: blurSize },
       inputTexture: { value: null },

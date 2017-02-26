@@ -23,8 +23,8 @@ export default class Stars {
   constructor(private _renderer: THREE.WebGLRenderer, private _camera: THREE.Camera) {
     this._scene = new THREE.Scene();
 
-    let width = window.innerWidth;
-    let height = window.innerHeight;
+    let width = Settings.width;
+    let height = Settings.height;
     this._starsRenderTarget = new THREE.WebGLRenderTarget(width, height, {
       minFilter: THREE.NearestFilter,
       magFilter: THREE.NearestFilter,

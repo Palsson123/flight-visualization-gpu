@@ -24,8 +24,8 @@ export default class PlanetGlow {
     this._camera = camera;
     this._scene = new THREE.Scene();
 
-    let width = window.innerWidth;
-    let height = window.innerHeight;
+    let width = Settings.width;
+    let height = Settings.height;
 
     this._normalsUniforms = {
       sunPosition: { type: 'v3', value: null }

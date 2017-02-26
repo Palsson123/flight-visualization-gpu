@@ -1,5 +1,6 @@
 import {IGeometry} from "../../services/data.service";
 import {spheriticalToCartesian} from "../../models/spheritical-to-cartesian.model";
+import {Settings} from "../settings";
 
 export default class CountryBorders {
   private _renderer: THREE.WebGLRenderer;
@@ -20,7 +21,7 @@ export default class CountryBorders {
 
     this._lineMaterial = new THREE.LineBasicMaterial({ color: 0x222222 });
     this._countryBorderLines = [];
-    this._renderTarget = new THREE.WebGLRenderTarget(window.innerWidth, window.innerHeight, {
+    this._renderTarget = new THREE.WebGLRenderTarget(Settings.width, Settings.height, {
       minFilter: THREE.NearestFilter,
       magFilter: THREE.NearestFilter,
       format: THREE.RGBFormat,

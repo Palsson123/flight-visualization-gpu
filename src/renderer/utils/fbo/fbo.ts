@@ -6,10 +6,9 @@ export class FBO {
   private _renderer: THREE.WebGLRenderer;
   private _fboScene: THREE.Scene;
   private _orthographicCamera: THREE.OrthographicCamera;
-  private _renderTargets: THREE.WebGLRenderTarget[];
-  private _numRenderTargets: number;
+  private _renderTarget: THREE.WebGLRenderTarget;
 
-  constructor(width: number, height: number, renderer: THREE.WebGLRenderer, shader: THREE.ShaderMaterial, numRenderTargets?: number) {
+  constructor(width: number, height: number, renderer: THREE.WebGLRenderer, shader: THREE.ShaderMaterial, filtering?: any) {
     this._renderer = renderer;
     let gl: WebGLRenderingContext = this._renderer.getContext();
 
@@ -23,28 +22,12 @@ export class FBO {
 
     this._orthographicCamera = new THREE.OrthographicCamera(-1, 1, 1, -1, 1 / Math.pow( 2, 53 ), 1);
 
-    if (numRenderTargets != null) {
-      this._numRenderTargets =  numRenderTargets;
-      this._renderTargets = [];
-      for (let i = 0; i < numRenderTargets; i++) {
-        this._renderTargets.push(new THREE.WebGLRenderTarget(width, height, {
-          minFilter: THREE.NearestFilter,
-          magFilter: THREE.NearestFilter,
-          format: THREE.RGBFormat,
-          type: THREE.FloatType,
-        }));
-      }
-    }
-    else {
-      this._numRenderTargets = 1;
-      this._renderTargets = [];
-      this._renderTargets.push(new THREE.WebGLRenderTarget(width, height, {
-        minFilter: THREE.NearestFilter,
-        magFilter: THREE.NearestFilter,
-        format: THREE.RGBFormat,
-        type: THREE.FloatType,
-      }));
-    }
+    this._renderTarget = new THREE.WebGLRenderTarget(width, height, {
+      minFilter: filtering != null ? filtering : THREE.NearestFilter,
+      magFilter: filtering != null ? filtering : THREE.NearestFilter,
+      format: THREE.RGBFormat,
+      type: THREE.FloatType,
+    });
 
     this._fboScene = new THREE.Scene();
     let geometry = new THREE.PlaneGeometry( 2, 2, 2 );
@@ -56,23 +39,11 @@ export class FBO {
     this._renderer.render(this._fboScene, this._orthographicCamera);
   }
 
-  public render(index?: number) {
-    //console.log(index);
-    if (index == null) {
-      this._renderer.render(this._fboScene, this._orthographicCamera, this._renderTargets[0]);
-    }
-    else {
-      this._renderer.render(this._fboScene, this._orthographicCamera, this._renderTargets[index]);
-    }
+  public render() {
+    this._renderer.render(this._fboScene, this._orthographicCamera, this._renderTarget);
   }
-
 
   get texture(): THREE.Texture {
-    return this._renderTargets[0].texture;
-  }
-
-  getTextureAtIndex(index: number) {
-    //console.log(this._renderTargets[index].texture);
-    return this._renderTargets[index].texture;
+    return this._renderTarget.texture;
   }
 }

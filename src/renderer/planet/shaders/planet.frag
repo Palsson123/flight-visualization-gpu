@@ -13,8 +13,6 @@ varying vec3 vBitangent;
 varying vec3 vNormal;
 varying vec3 vPosition;
 
-
-
 vec3 phong(vec3 ka, vec3 kd, vec3 ks, float alpha, vec3 normal) {
     vec3 n = normalize( normal );
     vec3 s = normalize( vPosition - sunPosition );
@@ -55,7 +53,7 @@ vec3 water() {
     float ds3 = snoise3(vPosition * largeWaterFreq - vec3(time * largeWaterSpeed) + largeOffset * vTangent) - snoise3(vPosition * largeWaterFreq - vec3(time * largeWaterSpeed) - largeOffset * vTangent);
     float dt3 = snoise3(vPosition * largeWaterFreq - vec3(time * largeWaterSpeed) + largeOffset * vBitangent) - snoise3(vPosition * largeWaterFreq - vec3(time * largeWaterSpeed) - largeOffset * vBitangent);
 
-    vec3 newNormal = normalize(vNormal + 5.0 * (ds1 + ds2 + ds3) * vTangent + 5.0 * (dt1 + dt2 + dt3) * vBitangent);
+    vec3 newNormal = normalize(vNormal + 7.0 * (ds1 + ds2 + ds3) * vTangent + 7.0 * (dt1 + dt2 + dt3) * vBitangent);
 
     return phong(ambient, diffuse, specular, 6.0, newNormal);
 }

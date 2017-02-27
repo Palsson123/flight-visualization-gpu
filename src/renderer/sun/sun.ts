@@ -15,8 +15,6 @@ export default class Sun {
   private _sunMesh: THREE.Mesh;
   private _sunRenderTarget: THREE.WebGLRenderTarget;
   private _sunUniforms: any;
-  private _glowPass: Blur;
-  private _outputTexture: THREE.Texture;
 
   constructor(renderer: THREE.WebGLRenderer, camera: THREE.Camera) {
     this._scene = new THREE.Scene();
@@ -52,17 +50,14 @@ export default class Sun {
       format: THREE.RGBFormat,
       type: THREE.FloatType,
     });
-
-    this._glowPass = new Blur(renderer, camera, 2.0);
   }
 
   public render(time: number) {
     this._sunUniforms.time.value = time;
     this._renderer.render(this._scene, this._camera, this._sunRenderTarget);
-    this._outputTexture = this._glowPass.blurThisPlease(this._sunRenderTarget.texture, Settings.sunGlowIterations)
   }
 
-  get texture(): THREE.Texture { return this._outputTexture; }
+  get texture(): THREE.Texture { return this._sunRenderTarget.texture; }
   get position(): THREE.Vector3 { return this._sunMesh.position; }
   set position(pos: THREE.Vector3){ this._sunMesh.position = pos; }
 }

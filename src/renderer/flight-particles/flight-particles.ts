@@ -24,7 +24,8 @@ export default class FlightParticles {
   private _uniforms: any;
 
   private _renderTarget: THREE.WebGLRenderTarget;
-  private _flightTrailFBO: FBO;
+  private _flightTrailFBOs: FBO[];
+  private _currentFlightTrailIndex: number = 0;
   private _flightTrailShader: THREE.ShaderMaterial;
   private _flightTrailUniforms: any;
 
@@ -53,18 +54,18 @@ export default class FlightParticles {
 
     this._currentIndex = this._currentIndex == 0 ? 1 : 0;
     this._flightTrailUniforms.flightTrail.value = this._renderTarget.texture;
-    let accumulatedTexture = this._flightTrailFBO.getTextureAtIndex(this._currentIndex == 0 ? 1 : 0);
-    this._flightTrailUniforms.accumulatedFlightTrail.value = accumulatedTexture;
+
+    this._flightTrailUniforms.accumulatedFlightTrail.value = this._flightTrailFBOs[1 - this._currentFlightTrailIndex].texture;
 
     if (!this._lastCameraPosition.equals(this._camera.position)) {
       this._flightTrailUniforms.cameraHasUpdated.value = 1.0;
       this._lastCameraPosition = new THREE.Vector3(this._camera.position.x, this._camera.position.y, this._camera.position.z);
     }
 
-    this._flightTrailFBO.render(this._currentIndex);
+    this._flightTrailFBOs[this._currentFlightTrailIndex].render();
     this._flightTrailUniforms.cameraHasUpdated.value = 0.0;
 
-    let blurTexture = this._flightTrailFBO.getTextureAtIndex(this._currentIndex);
+    this._currentFlightTrailIndex = 1 - this._currentFlightTrailIndex;
   }
 
   public init(flights: Flight[], airports: {[id: string]: Airport}) {
@@ -133,7 +134,10 @@ export default class FlightParticles {
       blending: THREE.AdditiveBlending
     });
     this._flightTrailShader.needsUpdate = true;
-    this._flightTrailFBO = new FBO(window.innerWidth, window.innerHeight, this._renderer, this._flightTrailShader, 2);
+
+    this._flightTrailFBOs = [];
+    this._flightTrailFBOs.push(new FBO(window.innerWidth, window.innerHeight, this._renderer, this._flightTrailShader));
+    this._flightTrailFBOs.push(new FBO(window.innerWidth, window.innerHeight, this._renderer, this._flightTrailShader));
   }
 
   private generateFlightTextures(flights: Flight[], airports: {[id: string]: Airport}, width, height) {
@@ -201,7 +205,7 @@ export default class FlightParticles {
   }
 
   get texture() {
-    return this._flightTrailFBO.getTextureAtIndex(this._currentIndex);
+    return this._flightTrailFBOs[this._currentFlightTrailIndex].texture;
   }
 
   get renderTarget(): THREE.WebGLRenderTarget {

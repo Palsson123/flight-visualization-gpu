@@ -5,6 +5,7 @@ import {FBO} from "../../renderer/utils/fbo/fbo";
 import {Flight} from "../flights/flight.model";
 import {Airport} from "../../models/airport.model";
 import FlightParticles from "../../renderer/flight-particles/flight-particles";
+import Blur from "../../renderer/utils/blur/blur";
 const Stats = require('stats-js');
 
 /*
@@ -12,6 +13,8 @@ const Stats = require('stats-js');
  */
 const composerFrag = require('raw-loader!glslify-loader!./shaders/composer.frag');
 const composerVert = require('raw-loader!glslify-loader!./shaders/composer.vert');
+const glowComposerVert = require('raw-loader!glslify-loader!./shaders/glowComposer.vert');
+const glowComposerFrag = require('raw-loader!glslify-loader!./shaders/glowComposer.frag');
 
 @Injectable()
 export class RenderService {
@@ -21,12 +24,14 @@ export class RenderService {
   private _stats: any;
   private _controls: THREE.OrbitControls;
   private _mapRenderer: MapRenderer;
-  private _renderTarget: THREE.WebGLRenderTarget;
-
   private _flightParticles: FlightParticles;
-
-  private _fbo: FBO;
+  private _composerPass: FBO;
   private _composerUniforms: any;
+  private _glowComposerPass: FBO;
+  private _glowComposerUniforms: any;
+  private _glowPass: Blur;
+  private _glowUniforms: any;
+
 
   constructor(private dataService: DataService) {
     this._scene = new THREE.Scene();
@@ -45,15 +50,9 @@ export class RenderService {
     this._renderer = new THREE.WebGLRenderer();
     this._renderer.setSize(window.innerWidth, window.innerHeight);
 
-    this._renderTarget = new THREE.WebGLRenderTarget(window.innerWidth, window.innerHeight, {
-      minFilter: THREE.NearestFilter,
-      magFilter: THREE.NearestFilter,
-      format: THREE.RGBAFormat,
-      type: THREE.FloatType,
-    });
-
-
     this._flightParticles = new FlightParticles(this._renderer, this._camera);
+
+    this._glowPass = new Blur(this._renderer, this._camera, 1);
   }
 
   private time = 0.0;
@@ -64,19 +63,25 @@ export class RenderService {
     this._controls.update();
     this._flightParticles.update();
     this._composerUniforms.flights.value = this._flightParticles.texture;
-    //his._composerUniforms.flightsGlow.value = this._flightParticles.glowTexture;
+    //this._composerUniforms.flightsGlow.value = this._flightParticles.glowTexture;
 
     this._mapRenderer.update(this.time);
     this._mapRenderer.render();
 
+    this._glowComposerUniforms.planetGlow.value = this._mapRenderer.planetGlowTexture;
+    this._glowComposerUniforms.sun.value = this._mapRenderer.sunTexture;
+    this._glowComposerUniforms.stars.value = this._mapRenderer.starsTexture;
+    this._glowComposerPass.render();
+
+
+    this._composerUniforms.glow.value = this._glowPass.blurThisPlease(this._glowComposerPass.texture, 10);
     this._composerUniforms.map.value = this._mapRenderer.texture;
     this._composerUniforms.planet.value = this._mapRenderer.planetTexture;
-    this._composerUniforms.planetGlow.value = this._mapRenderer.planetGlowTexture;
     this._composerUniforms.stars.value = this._mapRenderer.starsTexture;
     this._composerUniforms.sun.value = this._mapRenderer.sunTexture;
     this._composerUniforms.countryBorders.value = this._mapRenderer.borderTexture;
 
-    this._fbo.renderToViewport();
+    this._composerPass.renderToViewport();
 
     this.time += 0.01;
     this._stats.end();
@@ -95,13 +100,12 @@ export class RenderService {
 
     this._composerUniforms = {
       flights: { value: null },
-      flightsGlow: { value: null },
       planet: { value: null },
-      planetGlow: { value: null },
       stars: { value: null },
       sun: { value: null },
       map: { value: null },
       countryBorders: { value: null },
+      glow: { value: null },
       size: { type: "v2", value: new THREE.Vector2(window.innerWidth, window.innerHeight) }
     };
 
@@ -114,7 +118,24 @@ export class RenderService {
     });
     shader.needsUpdate = true;
 
-    this._fbo = new FBO(window.innerWidth, window.innerHeight, this._renderer, shader);
+    this._composerPass = new FBO(window.innerWidth, window.innerHeight, this._renderer, shader);
+
+    this._glowComposerUniforms = {
+      planetGlow: { value: null },
+      sun: { value: null },
+      stars: { value: null }
+    };
+
+    let glowShader = new THREE.ShaderMaterial({
+      uniforms: this._glowComposerUniforms,
+      vertexShader: glowComposerVert,
+      fragmentShader: glowComposerFrag,
+      transparent: true,
+      blending: THREE.AdditiveBlending
+    });
+    glowShader.needsUpdate = true;
+
+    this._glowComposerPass = new FBO(window.innerWidth, window.innerHeight, this._renderer, glowShader);
 
     this.render();
   }

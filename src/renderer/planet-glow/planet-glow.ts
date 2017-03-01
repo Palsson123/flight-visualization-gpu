@@ -1,7 +1,6 @@
-import Blur from "../utils/blur/blur";
+import {Settings} from "../settings";
 import SphereGeometry = THREE.SphereGeometry;
 import ShaderMaterial = THREE.ShaderMaterial;
-import {Settings} from "../settings";
 
 /*
  Shader imports
@@ -41,7 +40,7 @@ export default class PlanetGlow {
     this._normalsRenderTarget = new THREE.WebGLRenderTarget(width, height, {
       minFilter: THREE.NearestFilter,
       magFilter: THREE.NearestFilter,
-      format: THREE.RGBFormat,
+      format: THREE.RGBAFormat,
       type: THREE.FloatType,
     });
   }

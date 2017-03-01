@@ -21,7 +21,7 @@ export default class Sun {
     this._renderer = renderer;
     this._camera = camera;
 
-    let sunGeometry = new THREE.SphereGeometry(10, 16, 16);
+    let sunGeometry = new THREE.SphereGeometry(8, 16, 16);
 
     this._sunUniforms = {
       time: { type: 'f', value: 0.0 }

@@ -71,6 +71,7 @@ export class RenderService {
     this._glowComposerUniforms.planetGlow.value = this._mapRenderer.planetGlowTexture;
     this._glowComposerUniforms.sun.value = this._mapRenderer.sunTexture;
     this._glowComposerUniforms.stars.value = this._mapRenderer.starsTexture;
+    this._glowComposerUniforms.flightTrail.value = this._flightParticles.texture;
     this._glowComposerPass.render();
 
 
@@ -123,7 +124,8 @@ export class RenderService {
     this._glowComposerUniforms = {
       planetGlow: { value: null },
       sun: { value: null },
-      stars: { value: null }
+      stars: { value: null },
+      flightTrail: { value: null }
     };
 
     let glowShader = new THREE.ShaderMaterial({

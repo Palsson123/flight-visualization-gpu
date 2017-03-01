@@ -28,7 +28,7 @@ vec3 phong(vec3 ka, vec3 kd, vec3 ks, float alpha, vec3 normal) {
 
 vec3 water() {
     vec3 ambient = vec3(0.0);
-    vec3 diffuse = vec3(0.0, 0.03, 0.07);
+    vec3 diffuse = vec3(0.0, 0.01, 0.03);
     vec3 specular = vec3(0.5, 0.5, 0.5);
 
     float freqFactor = 2.0;

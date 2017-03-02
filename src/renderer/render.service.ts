@@ -1,11 +1,12 @@
 import {Injectable, ElementRef} from "@angular/core";
-import {MapRenderer} from "../flights/map-renderer.model";
-import {DataService, IFeature} from "../data.service";
-import {FBO} from "../../renderer/utils/fbo/fbo";
-import {Flight} from "../flights/flight.model";
-import {Airport} from "../../models/airport.model";
-import FlightParticles from "../../renderer/flight-particles/flight-particles";
-import Blur from "../../renderer/utils/blur/blur";
+import {MapRenderer} from "../services/flights/map-renderer.model";
+import {DataService, IFeature} from "../services/data.service";
+import {FBO} from "./utils/fbo/fbo";
+import {Flight} from "../services/flights/flight.model";
+import {Airport} from "../models/airport.model";
+import FlightParticles from "./flight-particles/flight-particles";
+import Blur from "./utils/blur/blur";
+import {TimeService} from "../services/time.service";
 const Stats = require('stats-js');
 
 /*
@@ -33,7 +34,10 @@ export class RenderService {
   private _glowUniforms: any;
 
 
-  constructor(private dataService: DataService) {
+  constructor(
+    private dataService: DataService,
+    private timeService: TimeService
+  ) {
     this._scene = new THREE.Scene();
 
     this._camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -50,8 +54,7 @@ export class RenderService {
     this._renderer = new THREE.WebGLRenderer();
     this._renderer.setSize(window.innerWidth, window.innerHeight);
 
-    this._flightParticles = new FlightParticles(this._renderer, this._camera);
-
+    this._flightParticles = new FlightParticles(this._renderer, this._camera, this.timeService);
     this._glowPass = new Blur(this._renderer, this._camera, 1);
   }
 
@@ -61,6 +64,7 @@ export class RenderService {
     requestAnimationFrame( this.render );
 
     this._controls.update();
+
     this._flightParticles.update();
     this._composerUniforms.flights.value = this._flightParticles.texture;
     //this._composerUniforms.flightsGlow.value = this._flightParticles.glowTexture;
@@ -68,12 +72,11 @@ export class RenderService {
     this._mapRenderer.update(this.time);
     this._mapRenderer.render();
 
+    this._glowComposerUniforms.planet.value = this._mapRenderer.planetTexture;
     this._glowComposerUniforms.planetGlow.value = this._mapRenderer.planetGlowTexture;
     this._glowComposerUniforms.sun.value = this._mapRenderer.sunTexture;
-    this._glowComposerUniforms.stars.value = this._mapRenderer.starsTexture;
     this._glowComposerUniforms.flightTrail.value = this._flightParticles.texture;
     this._glowComposerPass.render();
-
 
     this._composerUniforms.glow.value = this._glowPass.blurThisPlease(this._glowComposerPass.texture, 10);
     this._composerUniforms.map.value = this._mapRenderer.texture;
@@ -94,7 +97,7 @@ export class RenderService {
   }
 
   public initData(flights: Flight[], airports: {[id: string]: Airport}) {
-    this._mapRenderer = new MapRenderer(this._renderer, this._camera);
+    this._mapRenderer = new MapRenderer(this._renderer, this._camera, this.timeService);
     this.dataService.features.subscribe((features: IFeature[]) => this._mapRenderer.drawMap(features));
 
     this._flightParticles.init(flights, airports);
@@ -122,6 +125,7 @@ export class RenderService {
     this._composerPass = new FBO(window.innerWidth, window.innerHeight, this._renderer, shader);
 
     this._glowComposerUniforms = {
+      planet: { value: null },
       planetGlow: { value: null },
       sun: { value: null },
       stars: { value: null },

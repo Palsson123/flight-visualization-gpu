@@ -6,15 +6,17 @@ import {HttpModule, Http} from '@angular/http';
 import { MaterialModule } from '@angular/material';
 
 import { AppComponent } from './app.component';
-import {RenderService} from "../services/renderer/render.service";
-import {LoaderService} from "../services/loader/loader.service";
+import {RenderService} from "../renderer/render.service";
 import {DataService} from "../services/data.service";
 import {MapService} from "../services/map.service";
 import {FlightsService} from "../services/flights/flights.service";
+import {TimeService} from "../services/time.service";
+import {UnixFormatterPipe} from "../pipes/unix-formatter.pipe";
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    UnixFormatterPipe
   ],
   imports: [
     BrowserModule,
@@ -25,9 +27,9 @@ import {FlightsService} from "../services/flights/flights.service";
   providers: [
     DataService,
     RenderService,
-    LoaderService,
     MapService,
     FlightsService,
+    TimeService
   ],
   bootstrap: [AppComponent]
 })

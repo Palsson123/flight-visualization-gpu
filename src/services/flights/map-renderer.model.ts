@@ -5,6 +5,7 @@ import Sun from "../../renderer/sun/sun";
 import CountryBorders from "../../renderer/country-borders/country-borders";
 import PlanetGlow from "../../renderer/planet-glow/planet-glow";
 import Stars from "../../renderer/stars/stars";
+import {TimeService} from "../time.service";
 
 export const MULTI_POLYGON = 'MultiPolygon';
 export const POLYGON = 'Polygon';
@@ -16,7 +17,7 @@ export class MapRenderer extends RenderPass {
   private _stars: Stars;
   private _countryBorders: CountryBorders;
 
-  constructor(renderer: THREE.WebGLRenderer, camera: THREE.Camera) {
+  constructor(renderer: THREE.WebGLRenderer, camera: THREE.Camera, private timeService: TimeService) {
     super(renderer, new THREE.Scene(), camera);
 
     this._sun = new Sun(renderer, camera);
@@ -36,7 +37,6 @@ export class MapRenderer extends RenderPass {
     this._planetGlow.render(this._planet.texture, this._sun.position);
 
     this._stars.render();
-
     this._countryBorders.render();
   }
 

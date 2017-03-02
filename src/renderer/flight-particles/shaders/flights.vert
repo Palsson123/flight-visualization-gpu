@@ -28,14 +28,19 @@ void main() {
 
     float flightDepartureTime = texture2D(flightTimes, position.xy).x;
     float flightArrivalTime = texture2D(flightTimes, position.xy).y;
-    //float flightTime = clamp((currentTime - flightDepartureTime) / (flightArrivalTime - flightDepartureTime), 0.0, 1.0);
-    float flightTime = clamp((currentTime - flightDepartureTime) / endTime, 0.0, 1.0);
-
+    //float flightTime = 100.0 * ((currentTime - startTime) / (endTime - startTime));
+    float flightTime = clamp(0.01 * (currentTime - flightDepartureTime) / (flightArrivalTime - flightDepartureTime), 0.0, 1.0);
+    //float flightTime = clamp((currentTime - flightDepartureTime) / endTime, 0.0, 1.0);
+    //float flightTime = currentTime
 
     //vec3 interpolatedPosition = departurePosition * (1.0 - time) + arrivalPosition * time;
     vec3 interpolatedPosition = bezier(flightTime, departurePosition, midPointPosition, arrivalPosition);
     gl_Position = projectionMatrix * modelViewMatrix * vec4( interpolatedPosition.xyz, 1.0 );
 
+    if (flightDepartureTime == 0.0 || flightArrivalTime == 0.0)  {
+        interpolatedPosition = vec3(0.0,0.0,0.0);
+    }
+
     vUv = vec2(position.x, position.y);
-    gl_PointSize = pointSize;
+    gl_PointSize = 1.5;
 }

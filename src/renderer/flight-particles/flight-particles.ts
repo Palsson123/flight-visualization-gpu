@@ -3,6 +3,9 @@ import {Airport} from "../../models/airport.model";
 import {FBO} from "../utils/fbo/fbo";
 import {Flight} from "../../services/flights/flight.model";
 import {Settings} from "../settings";
+import {TimeService} from "../../services/time.service";
+
+const uniformFactor = 1000.0;
 
 /*
  Shader imports
@@ -13,9 +16,7 @@ const flightsTrailFrag = require('raw-loader!glslify-loader!./shaders/flightsTra
 const flightsTrailVert = require('raw-loader!glslify-loader!./shaders/flightsTrail.vert');
 
 export default class FlightParticles {
-  private _renderer: THREE.WebGLRenderer;
   private _scene: THREE.Scene;
-  private _camera: THREE.Camera;
   private _lastCameraPosition: THREE.Vector3;
   private _group: THREE.Group;
   private _flightParticles: THREE.Points;
@@ -29,7 +30,7 @@ export default class FlightParticles {
   private _flightTrailShader: THREE.ShaderMaterial;
   private _flightTrailUniforms: any;
 
-  constructor(renderer: THREE.WebGLRenderer, camera: THREE.Camera) {
+  constructor(private _renderer: THREE.WebGLRenderer, private _camera: THREE.Camera, private _timeService: TimeService) {
     this._scene = new THREE.Scene();
     this._group = new THREE.Group();
     this._group.rotateX(-Math.PI / 1.4);
@@ -38,18 +39,15 @@ export default class FlightParticles {
     let sphere = new THREE.Mesh(new THREE.SphereGeometry(10,16,16), new THREE.MeshBasicMaterial({color: 0x000000}));
     this._scene.add(sphere);
 
-    this._renderer = renderer;
-    this._camera = camera;
     this._lastCameraPosition = new THREE.Vector3(this._camera.position.x, this._camera.position.y, this._camera.position.z);
     this._currentTime = 0.0;
   }
 
   private _currentIndex = 0;
   public update() {
-    //this._currentTime += 0.01;
-    this._currentTime += 100;
-
-    this._uniforms.currentTime.value = this._currentTime;
+    //this._uniforms.currentTime.value = 100 * ((this._timeService.currentTime / 10000.0 - this._uniforms.startTime.value) / (this._uniforms.endTime.value - this._uniforms.startTime.value));
+    this._uniforms.currentTime.value = this._timeService.currentTime / uniformFactor;
+    //console.log(this._timeService.currentTime / 10000.0 - this._uniforms.startTime.value, this._uniforms.endTime.value - this._uniforms.startTime.value);
     this._renderer.render(this._scene, this._camera, this._renderTarget);
 
     this._currentIndex = this._currentIndex == 0 ? 1 : 0;
@@ -88,10 +86,13 @@ export default class FlightParticles {
       flightTimes: { value: flightTextures.flightTimes },
       positions: { value: flightTextures.departurePositions },
       pointSize: { value: 2 },
-      startTime: { value: flightTextures.startTime },
-      endTime: { value: flightTextures.endTime },
-      currentTime: { value: flightTextures.startTime}
+      startTime: { value: 0},
+      endTime: { value: 0},
+      currentTime: { value: 0 }
     };
+
+    this._timeService.startTime.subscribe((value: number) => this._uniforms.startTime.value = value / uniformFactor);
+    this._timeService.endTime.subscribe((value: number) => this._uniforms.endTime.value = value / uniformFactor);
 
     this._particlesRenderShader = new THREE.ShaderMaterial({
       uniforms: this._uniforms,
@@ -115,8 +116,6 @@ export default class FlightParticles {
 
     this._flightParticles = new THREE.Points(geometry, this._particlesRenderShader);
     this._group.add(this._flightParticles);
-    this._currentTime = flightTextures.startTime;
-
 
     /*
      Trail fbo
@@ -147,9 +146,6 @@ export default class FlightParticles {
     let arrivalPositions = new Float32Array(length);
     let flightTimes = new Float32Array(length);
 
-    let startTime = 900000000000;
-    let endTime = -900000000000;
-
     for (let i = 0; i < flights.length * 3; i += 3) {
       let flight: Flight = flights[i / 3];
 
@@ -173,12 +169,9 @@ export default class FlightParticles {
         midPointPositions[i + 2] = midPos.z;
         arrivalPositions[i + 2] = arrivalPos.z;
 
-        flightTimes[i] = flight.departureTime / 10000.0;
-        flightTimes[i + 1] = flight.arrivalTime / 10000.0;
+        flightTimes[i] = flight.departureTime / uniformFactor;
+        flightTimes[i + 1] = flight.arrivalTime / uniformFactor;
         flightTimes[i + 2] = 0;
-
-        startTime = flight.departureTime < startTime ? flight.departureTime : startTime;
-        endTime = flight.arrivalTime > endTime ? flight.arrivalTime : endTime;
       }
     }
 
@@ -187,8 +180,6 @@ export default class FlightParticles {
       midPointPositions: this.generateDataTexture(midPointPositions, width, height),
       arrivalPositions: this.generateDataTexture(arrivalPositions, width, height),
       flightTimes: this.generateDataTexture(flightTimes, width, height),
-      startTime: startTime / 10000.0 ,
-      endTime: endTime / 10000.0
     }
   }
 

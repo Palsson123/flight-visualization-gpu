@@ -1,4 +1,5 @@
 uniform sampler2D planetGlow;
+uniform sampler2D planet;
 uniform sampler2D sun;
 uniform sampler2D stars;
 uniform sampler2D flightTrail;

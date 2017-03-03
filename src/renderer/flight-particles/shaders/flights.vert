@@ -1,3 +1,5 @@
+precision highp float;
+
 //float texture containing the positions of each particle
 uniform sampler2D positions;
 uniform sampler2D departurePositions;
@@ -28,12 +30,10 @@ void main() {
 
     float flightDepartureTime = texture2D(flightTimes, position.xy).x;
     float flightArrivalTime = texture2D(flightTimes, position.xy).y;
-    //float flightTime = 100.0 * ((currentTime - startTime) / (endTime - startTime));
-    float flightTime = clamp(0.01 * (currentTime - flightDepartureTime) / (flightArrivalTime - flightDepartureTime), 0.0, 1.0);
-    //float flightTime = clamp((currentTime - flightDepartureTime) / endTime, 0.0, 1.0);
-    //float flightTime = currentTime
+    float flightTime = clamp(0.5 * (currentTime - flightDepartureTime) / (flightArrivalTime - flightDepartureTime), 0.0, 1.0);
 
     //vec3 interpolatedPosition = departurePosition * (1.0 - time) + arrivalPosition * time;
+
     vec3 interpolatedPosition = bezier(flightTime, departurePosition, midPointPosition, arrivalPosition);
     gl_Position = projectionMatrix * modelViewMatrix * vec4( interpolatedPosition.xyz, 1.0 );
 

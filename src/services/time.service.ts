@@ -38,29 +38,24 @@ export class TimeService {
     this._currentTime.next(this._startTime.value);
   }
 
-  public updateTime(time: number) {
-    this._currentTime.next(time);
-  }
-
-  public updateFromSlider(normalizedTime: number) {
-    this._currentTime.next(this._startTime.value + normalizedTime * (this._endTime.value - this._startTime.value))
+  public incrementTime() {
+    this._timeSlider.writeValue(this._timeSlider.value + 0.00002);
   }
 
   public togglePlay() {
     this._isPlaying.next(!this._isPlaying.getValue())
   }
 
-  public connectTimeslider(timeSlider: MdSlider): void {
-    this._timeSlider = timeSlider;
-  }
-
   get currentTime(): number {
     if (this._timeSlider) {
-      return this._startTime.value + this._timeSlider.percent * (this._endTime.value - this._startTime.value);
+      return this._startTime.value + this._timeSlider.value * (this._endTime.value - this._startTime.value)
+      //return this._timeSlider.percent;
     }
   }
 
-  get startTime(): Observable<number> { return this._startTime.asObservable(); }
-  get endTime(): Observable<number> { return this._endTime.asObservable(); }
-  get isPlaying(): Observable<boolean> { return this._isPlaying.asObservable(); }
+  get startTimeObservable(): Observable<number> { return this._startTime.asObservable(); }
+  get endTimeObservable(): Observable<number> { return this._endTime.asObservable(); }
+  get isPlayingObservable(): Observable<boolean> { return this._isPlaying.asObservable(); }
+  get isPlaying(): boolean { return this._isPlaying.getValue(); }
+  set timeSlider(timeSlider: MdSlider) { this._timeSlider = timeSlider; }
 }

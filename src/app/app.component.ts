@@ -23,7 +23,7 @@ export class AppComponent implements AfterViewInit {
 
   ngAfterViewInit(): void {
     this.renderService.initRenderer(this.renderContainer);
-    this.timeService.connectTimeslider(this.timeSlider);
+    this.timeService.timeSlider = this.timeSlider;
     // this.timeSlider.change.subscribe((change: MdSliderChange) => {
     //   this.timeService.updateFromSlider(change.value)
     // });

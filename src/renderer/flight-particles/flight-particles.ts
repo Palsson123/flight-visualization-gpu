@@ -5,7 +5,7 @@ import {Flight} from "../../services/flights/flight.model";
 import {Settings} from "../settings";
 import {TimeService} from "../../services/time.service";
 
-const uniformFactor = 1000.0;
+const uniformFactor = 1.0 / 1000.0;
 
 /*
  Shader imports
@@ -45,11 +45,16 @@ export default class FlightParticles {
 
   private _currentIndex = 0;
   public update() {
-    //this._uniforms.currentTime.value = 100 * ((this._timeService.currentTime / 10000.0 - this._uniforms.startTime.value) / (this._uniforms.endTime.value - this._uniforms.startTime.value));
-    this._uniforms.currentTime.value = this._timeService.currentTime / uniformFactor;
-    //console.log(this._timeService.currentTime / 10000.0 - this._uniforms.startTime.value, this._uniforms.endTime.value - this._uniforms.startTime.value);
-    this._renderer.render(this._scene, this._camera, this._renderTarget);
 
+    if (this._timeService.isPlaying) {
+      this._timeService.incrementTime();
+    }
+
+    //this._uniforms.currentTime.value = this._timeService.currentTime;
+    this._uniforms.currentTime.value = this._timeService.currentTime / uniformFactor;
+
+
+    this._renderer.render(this._scene, this._camera, this._renderTarget);
     this._currentIndex = this._currentIndex == 0 ? 1 : 0;
     this._flightTrailUniforms.flightTrail.value = this._renderTarget.texture;
 
@@ -91,8 +96,8 @@ export default class FlightParticles {
       currentTime: { value: 0 }
     };
 
-    this._timeService.startTime.subscribe((value: number) => this._uniforms.startTime.value = value / uniformFactor);
-    this._timeService.endTime.subscribe((value: number) => this._uniforms.endTime.value = value / uniformFactor);
+    this._timeService.startTimeObservable.subscribe((value: number) => this._uniforms.startTime.value = value / uniformFactor);
+    this._timeService.endTimeObservable.subscribe((value: number) => this._uniforms.endTime.value = value / uniformFactor);
 
     this._particlesRenderShader = new THREE.ShaderMaterial({
       uniforms: this._uniforms,

@@ -11,7 +11,6 @@
   position: absolute;
   bottom: 0px;
   width: 100%;
-  height: 80px;
   pointer-events: visible;
   color: #fff;
 }
@@ -22,7 +21,7 @@
   vertical-align: middle;
   font-size: 10pt;
   position: absolute;
-  bottom: 7px;
+  bottom: 20px;
   line-height: 20px;
   width: 15%;
 }
@@ -52,8 +51,17 @@
   position: fixed;
 }
 
+.play-icon {
+  color: #fff;
+  font-size: 30pt;
+}
+
 .play-button {
   color: #fff;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  pointer-events: visible;
 }
 
 canvas { width: 100%; height: 100%; }

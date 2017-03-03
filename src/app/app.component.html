@@ -1,5 +1,16 @@
 <div class="app">
 
+
+
+  <button  class="play-button" (click)="timeService.togglePlay()" md-fab>
+    <span *ngIf="!(timeService.isPlayingObservable | async)">
+      <i class="zmdi zmdi-play play-icon"></i>
+    </span>
+    <span *ngIf="(timeService.isPlayingObservable | async)">
+      <i class="zmdi zmdi-pause play-icon"></i>
+    </span>
+  </button>
+
   <div class="time-slider-container">
     <div class="current-time-text">
       <span style="font-weight:400">Current time&nbsp;</span>
@@ -8,21 +19,18 @@
     <table width="100%" height="60px" style="background-color: rgba(255,255,255,0.02);">
       <td width="15%">
         <div class="time-limits-text">
-          <div>
-            <span class="time-small-header ">Start time&nbsp;</span>
-            {{timeService.startTime | async | unixFormatter:"YYYY-MM-DD"}}
-          </div>
-          <div>
-            <span class="time-small-header ">End time&nbsp;</span>
-            {{timeService.endTime | async | unixFormatter:"YYYY-MM-DD"}}
-          </div>
+          <span class="time-small-header ">Start time&nbsp;</span>
+          {{timeService.startTimeObservable | async | unixFormatter:"YYYY-MM-DD"}}
         </div>
       </td>
       <td width="70%">
         <md-slider min="0" max="1" step="0.00001" value="0.1" id="time-slider" #timeSlider></md-slider>
       </td>
       <td width="15%">
-        <button (click)="timeService.togglePlay()" md-button>Spela</button>
+        <div class="time-limits-text">
+          <span class="time-small-header ">End time&nbsp;</span>
+          {{timeService.endTimeObservable | async | unixFormatter:"YYYY-MM-DD"}}
+        </div>
       </td>
     </table>
 

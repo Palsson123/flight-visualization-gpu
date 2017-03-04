@@ -4,6 +4,7 @@ uniform sampler2D stars;
 uniform sampler2D map;
 uniform sampler2D sun;
 uniform sampler2D countryBorders;
+uniform sampler2D timeline;
 uniform sampler2D glow;
 uniform vec2 size;
 
@@ -17,6 +18,7 @@ void main(void) {
     vec3 borderColor = texture2D( countryBorders, vUv ).xyz;
     vec3 starsColor = texture2D( stars, vUv ).xyz;
     vec3 glowColor = texture2D( glow, vUv ).xyz;
+    vec3 timelineColor = texture2D( timeline, vUv ).xyz;
 
-    gl_FragColor = vec4(glowColor + planetColor + starsColor + flightsColor + mapColor + sunColor + borderColor, 1.0);
+    gl_FragColor = vec4(glowColor + 0.1 * timelineColor + planetColor + starsColor + flightsColor + mapColor + sunColor + borderColor, 1.0);
 }

@@ -2,6 +2,7 @@
   Shader imports
  */
 import {Settings} from "../settings";
+import {generateCircleLine} from "../utils/circleLine";
 const planetVert = require('raw-loader!glslify-loader!./shaders/planet.vert');
 const planetFrag = require('raw-loader!glslify-loader!./shaders/planet.frag');
 

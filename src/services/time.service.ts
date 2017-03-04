@@ -39,7 +39,7 @@ export class TimeService {
   }
 
   public incrementTime() {
-    this._timeSlider.writeValue(this._timeSlider.value + 0.00002);
+    this._timeSlider.writeValue(this._timeSlider.value + 0.00001);
   }
 
   public togglePlay() {
@@ -48,14 +48,17 @@ export class TimeService {
 
   get currentTime(): number {
     if (this._timeSlider) {
-      return this._startTime.value + this._timeSlider.value * (this._endTime.value - this._startTime.value)
+      return this._timeSlider.value * (this._endTime.value - this._startTime.value);
       //return this._timeSlider.percent;
     }
   }
 
+  get startTime(): number { return this._startTime.value; }
+  get endTime(): number { return this._endTime.value; }
+  get isPlaying(): boolean { return this._isPlaying.getValue(); }
+  set timeSlider(timeSlider: MdSlider) { this._timeSlider = timeSlider; }
+
   get startTimeObservable(): Observable<number> { return this._startTime.asObservable(); }
   get endTimeObservable(): Observable<number> { return this._endTime.asObservable(); }
   get isPlayingObservable(): Observable<boolean> { return this._isPlaying.asObservable(); }
-  get isPlaying(): boolean { return this._isPlaying.getValue(); }
-  set timeSlider(timeSlider: MdSlider) { this._timeSlider = timeSlider; }
 }

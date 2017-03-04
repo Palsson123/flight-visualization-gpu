@@ -23,7 +23,7 @@ export class RenderService {
   private _scene: THREE.Scene;
   private _camera: THREE.Camera;
   private _stats: any;
-  private _controls: THREE.OrbitControls;
+  private _controls: THREE.TrackballControls;
   private _mapRenderer: MapRenderer;
   private _flightParticles: FlightParticles;
   private _composerPass: FBO;
@@ -31,7 +31,10 @@ export class RenderService {
   private _glowComposerPass: FBO;
   private _glowComposerUniforms: any;
   private _glowPass: Blur;
-  private _glowUniforms: any;
+
+  // private _glowComposerPass: FBO;
+  // private _glowComposerUniforms: any;
+  // private _glowPass: Blur;
 
 
   constructor(
@@ -76,6 +79,7 @@ export class RenderService {
     this._glowComposerUniforms.planetGlow.value = this._mapRenderer.planetGlowTexture;
     this._glowComposerUniforms.sun.value = this._mapRenderer.sunTexture;
     this._glowComposerUniforms.flightTrail.value = this._flightParticles.texture;
+    //this._glowComposerUniforms.timeline.value = this._mapRenderer.timelineTexture;
     this._glowComposerPass.render();
 
     this._composerUniforms.glow.value = this._glowPass.blurThisPlease(this._glowComposerPass.texture, 10);
@@ -84,6 +88,7 @@ export class RenderService {
     this._composerUniforms.stars.value = this._mapRenderer.starsTexture;
     this._composerUniforms.sun.value = this._mapRenderer.sunTexture;
     this._composerUniforms.countryBorders.value = this._mapRenderer.borderTexture;
+    this._composerUniforms.timeline.value = this._mapRenderer.timelineTexture;
 
     this._composerPass.renderToViewport();
 
@@ -93,7 +98,8 @@ export class RenderService {
 
   public initRenderer(domElement: ElementRef) {
     domElement.nativeElement.appendChild(this._renderer.domElement);
-    this._controls = new THREE.OrbitControls(this._camera, this._renderer.domElement);
+    this._controls = new THREE.TrackballControls(this._camera, this._renderer.domElement);
+    this._controls.dynamicDampingFactor = 1.0;
   }
 
   public initData(flights: Flight[], airports: {[id: string]: Airport}) {
@@ -109,6 +115,7 @@ export class RenderService {
       sun: { value: null },
       map: { value: null },
       countryBorders: { value: null },
+      timeline: { value: null },
       glow: { value: null },
       size: { type: "v2", value: new THREE.Vector2(window.innerWidth, window.innerHeight) }
     };

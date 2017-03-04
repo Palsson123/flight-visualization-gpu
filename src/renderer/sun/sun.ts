@@ -1,6 +1,7 @@
 
 import Blur from "../utils/blur/blur";
 import {Settings} from "../settings";
+import {generateCircleLine} from "../utils/circleLine";
 
 /*
  Shader imports
@@ -50,6 +51,11 @@ export default class Sun {
       format: THREE.RGBFormat,
       type: THREE.FloatType,
     });
+
+  }
+
+  private generateCircleGeometry() {
+
   }
 
   public render(time: number) {

@@ -27,7 +27,6 @@ export class DataService {
       for (let airportJSON of d3.csvParse(res._body)) {
         airports[airportJSON['iata']] = Airport.CreateFromJSON(airportJSON);
       }
-      console.log(airports);
       return airports;
     });
 

@@ -23,8 +23,8 @@ export default class Blur {
     this._camera = camera;
     this._scene = new THREE.Scene();
 
-    let width = Settings.width / 4;
-    let height = Settings.height / 4;
+    let width = Settings.width / 2;
+    let height = Settings.height / 2;
 
     this._verticalBlurUniforms = {
       resolution: { type: 'v2', value: new THREE.Vector2(width, height)},

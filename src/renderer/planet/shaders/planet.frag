@@ -59,8 +59,8 @@ vec3 water() {
 }
 
 vec3 land() {
-    vec3 ambient = texture2D(earthColorMap, vUv).rgb * 0.1;
-    vec3 diffuse = texture2D(earthColorMap, vUv).rgb * 0.5;
+    vec3 ambient = texture2D(earthColorMap, vUv).rgb * 0.05;
+    vec3 diffuse = texture2D(earthColorMap, vUv).rgb * 0.2;
     vec3 specular = vec3(0.05);
 
     float offset = 1.0 / 4096.0;

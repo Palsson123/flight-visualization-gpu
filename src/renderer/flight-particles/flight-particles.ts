@@ -5,7 +5,7 @@ import {Flight} from "../../services/flights/flight.model";
 import {Settings} from "../settings";
 import {TimeService} from "../../services/time.service";
 
-const uniformFactor = 1.0 / 1000.0;
+const uniformFactor = 1.0;
 
 /*
  Shader imports
@@ -91,8 +91,8 @@ export default class FlightParticles {
       flightTimes: { value: flightTextures.flightTimes },
       positions: { value: flightTextures.departurePositions },
       pointSize: { value: 2 },
-      startTime: { value: 0},
-      endTime: { value: 0},
+      startTime: { value: 0 },
+      endTime: { value: this._timeService.endTime - this._timeService.startTime},
       currentTime: { value: 0 }
     };
 
@@ -174,8 +174,8 @@ export default class FlightParticles {
         midPointPositions[i + 2] = midPos.z;
         arrivalPositions[i + 2] = arrivalPos.z;
 
-        flightTimes[i] = flight.departureTime / uniformFactor;
-        flightTimes[i + 1] = flight.arrivalTime / uniformFactor;
+        flightTimes[i] = (flight.departureTime - this._timeService.startTime) / uniformFactor;
+        flightTimes[i + 1] = (flight.arrivalTime - this._timeService.startTime) / uniformFactor;
         flightTimes[i + 2] = 0;
       }
     }

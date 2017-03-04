@@ -1,9 +1,9 @@
 import {spheriticalToCartesian} from "../../models/spheritical-to-cartesian.model";
 import {Airport} from "../../models/airport.model";
-import {FBO} from "../utils/fbo/fbo";
 import {Flight} from "../../services/flights/flight.model";
 import {Settings} from "../settings";
 import {TimeService} from "../../services/time.service";
+import PingPongFBO from "../utils/fbo/ping-pong-fbo";
 
 const uniformFactor = 1.0;
 
@@ -25,8 +25,7 @@ export default class FlightParticles {
   private _uniforms: any;
 
   private _renderTarget: THREE.WebGLRenderTarget;
-  private _flightTrailFBOs: FBO[];
-  private _currentFlightTrailIndex: number = 0;
+  private _flightTrailFBO: PingPongFBO;
   private _flightTrailShader: THREE.ShaderMaterial;
   private _flightTrailUniforms: any;
 
@@ -50,7 +49,6 @@ export default class FlightParticles {
       this._timeService.incrementTime();
     }
 
-    //this._uniforms.currentTime.value = this._timeService.currentTime;
     this._uniforms.currentTime.value = this._timeService.currentTime / uniformFactor;
 
 
@@ -58,17 +56,15 @@ export default class FlightParticles {
     this._currentIndex = this._currentIndex == 0 ? 1 : 0;
     this._flightTrailUniforms.flightTrail.value = this._renderTarget.texture;
 
-    this._flightTrailUniforms.accumulatedFlightTrail.value = this._flightTrailFBOs[1 - this._currentFlightTrailIndex].texture;
+    this._flightTrailUniforms.accumulatedFlightTrail.value = this._flightTrailFBO.texture;
 
     if (!this._lastCameraPosition.equals(this._camera.position)) {
       this._flightTrailUniforms.cameraHasUpdated.value = 1.0;
       this._lastCameraPosition = new THREE.Vector3(this._camera.position.x, this._camera.position.y, this._camera.position.z);
     }
 
-    this._flightTrailFBOs[this._currentFlightTrailIndex].render();
+    this._flightTrailFBO.render();
     this._flightTrailUniforms.cameraHasUpdated.value = 0.0;
-
-    this._currentFlightTrailIndex = 1 - this._currentFlightTrailIndex;
   }
 
   public init(flights: Flight[], airports: {[id: string]: Airport}) {
@@ -139,9 +135,7 @@ export default class FlightParticles {
     });
     this._flightTrailShader.needsUpdate = true;
 
-    this._flightTrailFBOs = [];
-    this._flightTrailFBOs.push(new FBO(window.innerWidth, window.innerHeight, this._renderer, this._flightTrailShader));
-    this._flightTrailFBOs.push(new FBO(window.innerWidth, window.innerHeight, this._renderer, this._flightTrailShader));
+    this._flightTrailFBO = new PingPongFBO(window.innerWidth, window.innerHeight, this._renderer, this._flightTrailShader);
   }
 
   private generateFlightTextures(flights: Flight[], airports: {[id: string]: Airport}, width, height) {
@@ -201,7 +195,7 @@ export default class FlightParticles {
   }
 
   get texture() {
-    return this._flightTrailFBOs[this._currentFlightTrailIndex].texture;
+    return this._flightTrailFBO.texture;
   }
 
   get renderTarget(): THREE.WebGLRenderTarget {

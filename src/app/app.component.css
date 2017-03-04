@@ -7,19 +7,6 @@
   font-family: 'Roboto', sans-serif;
 }
 
-.loading-container {
-  position: absolute;
-  z-index: 1000;
-  width: 100%;
-  height: 100%;
-  background-color: #13222d;
-  text-align: center;
-  vertical-align: middle;
-  font-size: 40pt;
-  font-weight: 400;
-  color: #fff;
-}
-
 .time-slider-container {
   position: absolute;
   bottom: 0px;

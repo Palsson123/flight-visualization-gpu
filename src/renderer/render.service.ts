@@ -31,11 +31,8 @@ export class RenderService {
   private _glowComposerPass: FBO;
   private _glowComposerUniforms: any;
   private _glowPass: Blur;
-
-  // private _glowComposerPass: FBO;
-  // private _glowComposerUniforms: any;
-  // private _glowPass: Blur;
-
+  private _started: boolean = false;
+  private _advancedGraphics: boolean;
 
   constructor(
     private dataService: DataService,
@@ -44,7 +41,7 @@ export class RenderService {
     this._scene = new THREE.Scene();
 
     this._camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    this._camera.position.z = -25;
+    this._camera.position.z = -17;
     this._camera.lookAt(new THREE.Vector3(0,0,0));
 
     this._stats = new Stats();
@@ -59,6 +56,8 @@ export class RenderService {
 
     this._flightParticles = new FlightParticles(this._renderer, this._camera, this.timeService);
     this._glowPass = new Blur(this._renderer, this._camera, 1);
+
+    this._mapRenderer = new MapRenderer(this._renderer, this._camera, this.timeService);
   }
 
   private time = 0.0;
@@ -70,23 +69,24 @@ export class RenderService {
 
     this._flightParticles.update();
     this._composerUniforms.flights.value = this._flightParticles.texture;
-    //this._composerUniforms.flightsGlow.value = this._flightParticles.glowTexture;
 
     this._mapRenderer.update(this.time);
     this._mapRenderer.render();
 
-    this._glowComposerUniforms.planet.value = this._mapRenderer.planetTexture;
-    this._glowComposerUniforms.planetGlow.value = this._mapRenderer.planetGlowTexture;
-    this._glowComposerUniforms.sun.value = this._mapRenderer.sunTexture;
-    this._glowComposerUniforms.flightTrail.value = this._flightParticles.texture;
-    this._glowComposerPass.render();
+    if (this._advancedGraphics) {
+      this._glowComposerUniforms.planet.value = this._mapRenderer.planetTexture;
+      this._glowComposerUniforms.planetGlow.value = this._mapRenderer.planetGlowTexture;
+      this._glowComposerUniforms.sun.value = this._mapRenderer.sunTexture;
+      this._glowComposerUniforms.flightTrail.value = this._flightParticles.texture;
+      this._glowComposerPass.render();
 
-    this._composerUniforms.glow.value = this._glowPass.blurThisPlease(this._glowComposerPass.texture, 10);
-    this._composerUniforms.map.value = this._mapRenderer.texture;
-    this._composerUniforms.planet.value = this._mapRenderer.planetTexture;
-    this._composerUniforms.sun.value = this._mapRenderer.sunTexture;
+      this._composerUniforms.glow.value = this._glowPass.blurThisPlease(this._glowComposerPass.texture, 10);
+      this._composerUniforms.map.value = this._mapRenderer.texture;
+      this._composerUniforms.planet.value = this._mapRenderer.planetTexture;
+      this._composerUniforms.sun.value = this._mapRenderer.sunTexture;
+    }
+
     this._composerUniforms.countryBorders.value = this._mapRenderer.borderTexture;
-    //this._composerUniforms.timeline.value = this._mapRenderer.timelineTexture;
 
     this._composerPass.renderToViewport();
 
@@ -100,10 +100,11 @@ export class RenderService {
     this._controls.dynamicDampingFactor = 1.0;
   }
 
-  public initData(flights: Flight[], airports: {[id: string]: Airport}) {
-    this._mapRenderer = new MapRenderer(this._renderer, this._camera, this.timeService);
-    this.dataService.features.subscribe((features: IFeature[]) => this._mapRenderer.drawMap(features));
+  public init(flights: Flight[], airports: { [id: string]: Airport }, advancedGraphics: boolean) {
+    this._advancedGraphics = advancedGraphics;
+    this._mapRenderer.advancedGraphics = advancedGraphics;
 
+    this.dataService.features.subscribe((features: IFeature[]) => this._mapRenderer.drawMap(features));
     this._flightParticles.init(flights, airports);
 
     this._composerUniforms = {
@@ -150,4 +151,7 @@ export class RenderService {
 
     this.render();
   }
+
+  get started(): boolean { return this._started; }
+  set started(value: boolean) { this._started = value; }
 }

@@ -10,33 +10,46 @@ import * as moment from 'moment';
 
 @Injectable()
 export class DataService {
-  private _features: Observable<IFeature[]>;
-  private _flights: Observable<Flight[]>;
-  private _airports: Observable<any>;
+  private _featuresObservable: Observable<IFeature[]>;
+  private _flightsObservable: Observable<Flight[]>;
+  private _airportsObservable: Observable<{ [id: string]: Airport }>;
   private _dataLoaded: BehaviorSubject<boolean>;
+
+  private _features: IFeature[];
+  private _flights: Flight[];
+  private _airports: { [id: string]: Airport };
+
 
   constructor(private http: Http) {
     this._dataLoaded = new BehaviorSubject(false);
-    this._flights = this.http.get('../../assets/data/flights.csv').map((res: any) => {
-      //this.exportFilteredCSV(res, '2016-03-01T00:00:00', '2016-03-06T00:00:00');
 
-      let flights: Flight[] = [];
-      for (let flightJSON of d3.csvParse(res._body)) {
-        flights.push(Flight.CreateFromJSON(flightJSON));
-      }
-      this._dataLoaded.next(true);
-      return flights;
-    });
+    this._flightsObservable = this.http.get('../../assets/data/flights.csv')
+      .share()
+      .map((res: any) => {
+        console.log('data fetched');
+        //this.exportFilteredCSV(res, '2016-03-01T00:00:00', '2016-03-06T00:00:00');
 
-    this._airports = this.http.get('../../assets/data/airports.csv').map((res: any) => {
+        let flights: Flight[] = [];
+        for (let flightJSON of d3.csvParse(res._body)) {
+          flights.push(Flight.CreateFromJSON(flightJSON));
+        }
+        this._dataLoaded.next(true);
+
+        this._flights = flights;
+        return flights;
+      });
+
+    this._airportsObservable = this.http.get('../../assets/data/airports.csv').map((res: any) => {
       let airports = {};
       for (let airportJSON of d3.csvParse(res._body)) {
         airports[airportJSON['iata']] = Airport.CreateFromJSON(airportJSON);
       }
+      this._airports = airports;
       return airports;
     });
 
-    this._features = this.http.get('../assets/data/world.json').map((res: Response) => {
+    this._featuresObservable = this.http.get('../assets/data/world.json').map((res: Response) => {
+      this._features = res.json().features;
       return res.json().features;
     });
   }
@@ -71,9 +84,27 @@ export class DataService {
   }
 
 
-  get airports(): Observable<any> { return this._airports; }
-  get flights(): Observable<any> { return this._flights; }
-  get features(): Observable<IFeature[]> { return this._features; }
+  get airports(): Observable<{ [id: string]: Airport }> {
+    if (this._airports) {
+      return Observable.of(this._airports);
+    }
+    return this._airportsObservable;
+  }
+
+  get flights(): Observable<any> {
+    if (this._flights) {
+      return Observable.of(this._flights);
+    }
+    return this._flightsObservable;
+  }
+
+  get features(): Observable<IFeature[]> {
+    if (this._features) {
+      return Observable.of(this._features);
+    }
+    return this._featuresObservable;
+  }
+
   get dataLoaded(): Observable<boolean> { return this._dataLoaded.asObservable(); }
 }
 

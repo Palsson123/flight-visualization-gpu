@@ -1,0 +1,43 @@
+.start-page-container {
+  position: absolute;
+  z-index: 1000;
+  width: 100%;
+  height: 100%;
+  background: #727272; /* Old browsers */
+  background: -moz-linear-gradient(top, #727272 0%, #545454 100%); /* FF3.6-15 */
+  background: -webkit-linear-gradient(top, #727272 0%,#545454 100%); /* Chrome10-25,Safari5.1-6 */
+  background: linear-gradient(to bottom, #727272 0%,#545454 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#727272', endColorstr='#545454',GradientType=0 );
+  text-align: center;
+  vertical-align: middle;
+  font-size: 40pt;
+  font-weight: 400;
+  color: #fff;
+  pointer-events: visible;
+}
+
+.start-page-content {
+  width: 60%;
+  margin: auto;
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.start-page-header {
+  font-weight: 200;
+}
+
+.start-button {
+  font-size: 20pt;
+  font-weight: 400;
+  padding: 5px;
+  color: #444;
+  margin: auto;
+  width: 80%;
+}
+
+.radio-group {
+  font-size: 12pt;
+
+}

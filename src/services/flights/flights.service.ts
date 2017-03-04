@@ -22,20 +22,20 @@ export class FlightsService {
     private timeService: TimeService,
     private renderService: RenderService
   ) {
-    //this._airportsRenderer = new AirportsRenderer(renderService.mapGroup);
-    //this._flightsRenderer = new FlightsRenderer(renderService.mapGroup);
-
-    dataService.airports.subscribe((airports: { [id: string]: Airport } ) => {
-      this._airports = airports;
-
-      dataService.flights.subscribe((flights: Flight[]) => {
-        this._flights = flights;
-        this.timeService.init(this._flights, this._airports);
-        renderService.initData(this._flights, this._airports);
-      });
-
-      //this._airportsRenderer.drawAirports(airports);
-    });
+    // //this._airportsRenderer = new AirportsRenderer(renderService.mapGroup);
+    // //this._flightsRenderer = new FlightsRenderer(renderService.mapGroup);
+    //
+    // dataService.airports.subscribe((airports: { [id: string]: Airport } ) => {
+    //   this._airports = airports;
+    //
+    //   dataService.flights.subscribe((flights: Flight[]) => {
+    //     this._flights = flights;
+    //     this.timeService.init(this._flights, this._airports);
+    //     renderService.initData(this._flights, this._airports);
+    //   });
+    //
+    //   //this._airportsRenderer.drawAirports(airports);
+    // });
   }
 
 }

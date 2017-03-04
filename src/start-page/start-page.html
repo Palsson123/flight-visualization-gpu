@@ -1,0 +1,17 @@
+<div class="start-page-container">
+  <div class="start-page-content">
+    <i style="font-size: 80pt;" class="zmdi zmdi-flight-takeoff"></i>
+    <div class="start-page-header">Flight Visualization WebGL</div>
+
+    <md-radio-group class="radio-group" [(ngModel)]="advancedGraphics">
+      <md-radio-button style="margin-right: 15px;" [value]="true">
+        High quality graphics
+      </md-radio-button>
+      <md-radio-button class="example-radio-button" [value]="false">
+        Low quality graphics
+      </md-radio-button>
+    </md-radio-group>
+
+    <button (click)="start()" color="accent" class="start-button" md-raised-button>Start!</button>
+  </div>
+</div>

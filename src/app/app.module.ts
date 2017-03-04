@@ -12,11 +12,17 @@ import {MapService} from "../services/map.service";
 import {FlightsService} from "../services/flights/flights.service";
 import {TimeService} from "../services/time.service";
 import {UnixFormatterPipe} from "../pipes/unix-formatter.pipe";
+import {StartPageComponent, LoadingDialog} from "../start-page/start-page.component";
 
 @NgModule({
   declarations: [
     AppComponent,
-    UnixFormatterPipe
+    StartPageComponent,
+    UnixFormatterPipe,
+    LoadingDialog
+  ],
+  entryComponents: [
+    LoadingDialog
   ],
   imports: [
     BrowserModule,

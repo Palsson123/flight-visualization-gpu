@@ -2,7 +2,8 @@ import {Injectable} from "@angular/core";
 import {Flight} from "./flights/flight.model";
 import {Airport} from "../models/airport.model";
 import {BehaviorSubject, Observable} from "rxjs";
-import {MdSlider, MdSliderChange} from "@angular/material/slider"
+import {MdSlider} from "@angular/material/slider";
+import {DataService} from "./data.service";
 
 @Injectable()
 export class TimeService {
@@ -12,11 +13,17 @@ export class TimeService {
   private _isPlaying: BehaviorSubject<boolean>;
   private _timeSlider: MdSlider;
 
-  constructor() {
+  constructor(private dataService: DataService) {
     this._startTime = new BehaviorSubject(0);
     this._endTime = new BehaviorSubject(0);
     this._currentTime = new BehaviorSubject(0);
     this._isPlaying = new BehaviorSubject(false);
+
+    this.dataService.flights.subscribe((flights: Flight[]) => {
+      this.dataService.airports.subscribe((airports: { [id: string]: Airport } ) => {
+        this.init(flights, airports);
+      });
+    });
   }
 
   public init(flights: Flight[], airports: { [id: string]: Airport }): void {
@@ -35,7 +42,7 @@ export class TimeService {
 
     this._startTime.next(startTime);
     this._endTime.next(endTime);
-    this._currentTime.next(this._startTime.value);
+    this._currentTime.next(startTime);
   }
 
   public incrementTime() {
@@ -49,8 +56,15 @@ export class TimeService {
   get currentTime(): number {
     if (this._timeSlider) {
       return this._timeSlider.value * (this._endTime.value - this._startTime.value);
-      //return this._timeSlider.percent;
     }
+    return 0;
+  }
+
+  get realCurrentTime(): number {
+    if (this._timeSlider) {
+      return parseFloat(this._startTime.value.toString()) +  this._timeSlider.value * (this._endTime.value - this._startTime.value);
+    }
+    return 0;
   }
 
   get startTime(): number { return this._startTime.value; }

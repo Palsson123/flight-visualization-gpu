@@ -7,7 +7,6 @@ export class Flight {
   arrivalTime: number;
   arrivalAirportId: string;
 
-
   constructor(caId: string, depTime: number, depAirpId: string, arrTime: number, arrAirpId: string) {
     this.carrierId = caId;
     this.departureTime = depTime;
@@ -17,12 +16,11 @@ export class Flight {
   }
 
   static CreateFromJSON(json: any): Flight {
-    let deparuteDateString = json.FL_DATE + ' ' + json.DEP_TIME.slice(0,2) + ':' + json.DEP_TIME.slice(2,4);
     return new Flight(
       json.CARRIER,
-      moment(deparuteDateString, 'YYYY-MM-DD hh:mm').unix(),
+      json.DEPARTURE,
       json.ORIGIN,
-      moment(deparuteDateString, 'YYYY-MM-DD hh:mm').unix() + parseFloat(json.ACTUAL_ELAPSED_TIME) / 100 * 60 * 60,
+      json.ARRIVAL,
       json.DEST
     );
   }

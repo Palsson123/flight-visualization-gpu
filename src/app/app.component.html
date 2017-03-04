@@ -1,6 +1,7 @@
 <div class="app">
-
-
+  <div class="loading-container" *ngIf="!(dataService.dataLoaded | async)">
+    Loading data..
+  </div>
 
   <button  class="play-button" (click)="timeService.togglePlay()" md-fab>
     <span *ngIf="!(timeService.isPlayingObservable | async)">

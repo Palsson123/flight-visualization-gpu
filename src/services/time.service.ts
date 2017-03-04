@@ -39,7 +39,7 @@ export class TimeService {
   }
 
   public incrementTime() {
-    this._timeSlider.writeValue(this._timeSlider.value + 0.00001);
+    this._timeSlider.writeValue(this._timeSlider.value + 0.00005);
   }
 
   public togglePlay() {

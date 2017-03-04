@@ -20,5 +20,5 @@ void main(void) {
     vec3 glowColor = texture2D( glow, vUv ).xyz;
     vec3 timelineColor = texture2D( timeline, vUv ).xyz;
 
-    gl_FragColor = vec4(glowColor + 0.1 * timelineColor + planetColor + starsColor + flightsColor + mapColor + sunColor + borderColor, 1.0);
+    gl_FragColor = vec4(glowColor + planetColor + starsColor + flightsColor + mapColor + sunColor + borderColor, 1.0);
 }

@@ -79,16 +79,14 @@ export class RenderService {
     this._glowComposerUniforms.planetGlow.value = this._mapRenderer.planetGlowTexture;
     this._glowComposerUniforms.sun.value = this._mapRenderer.sunTexture;
     this._glowComposerUniforms.flightTrail.value = this._flightParticles.texture;
-    //this._glowComposerUniforms.timeline.value = this._mapRenderer.timelineTexture;
     this._glowComposerPass.render();
 
     this._composerUniforms.glow.value = this._glowPass.blurThisPlease(this._glowComposerPass.texture, 10);
     this._composerUniforms.map.value = this._mapRenderer.texture;
     this._composerUniforms.planet.value = this._mapRenderer.planetTexture;
-    this._composerUniforms.stars.value = this._mapRenderer.starsTexture;
     this._composerUniforms.sun.value = this._mapRenderer.sunTexture;
     this._composerUniforms.countryBorders.value = this._mapRenderer.borderTexture;
-    this._composerUniforms.timeline.value = this._mapRenderer.timelineTexture;
+    //this._composerUniforms.timeline.value = this._mapRenderer.timelineTexture;
 
     this._composerPass.renderToViewport();
 

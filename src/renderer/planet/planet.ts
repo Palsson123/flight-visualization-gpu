@@ -1,8 +1,12 @@
+import {Settings} from "../settings";
+import {generateCircleLine} from "../utils/circleLine";
+import {invertNormals} from "../utils/invertNormals";
+
 /*
   Shader imports
  */
-import {Settings} from "../settings";
-import {generateCircleLine} from "../utils/circleLine";
+const starsVert = require('raw-loader!glslify-loader!./shaders/stars.vert');
+const starsFrag = require('raw-loader!glslify-loader!./shaders/stars.frag');
 const planetVert = require('raw-loader!glslify-loader!./shaders/planet.vert');
 const planetFrag = require('raw-loader!glslify-loader!./shaders/planet.frag');
 
@@ -53,6 +57,19 @@ export default class Planet {
     let earthMesh = new THREE.Mesh(this._geometry, earthShader);
     earthMesh.rotation.set(Math.PI / 2.0, 0.0, Math.PI);
     this._scene.add(earthMesh);
+
+    let starsShader = new THREE.ShaderMaterial({
+      vertexShader: starsVert,
+      fragmentShader: starsFrag,
+      blending: THREE.AdditiveBlending
+    });
+
+    let starsSphereGeometry = new THREE.SphereGeometry(100, 30, 30);
+    invertNormals(starsSphereGeometry);
+
+    let sphere = new THREE.Mesh(starsSphereGeometry, starsShader);
+    let earth = new THREE.Mesh(new THREE.SphereGeometry(10, 30, 30), new THREE.MeshBasicMaterial({color: 0x000000}));
+    this._scene.add(sphere);
 
     this._renderTarget = new THREE.WebGLRenderTarget(Settings.width, Settings.height, {
       minFilter: THREE.NearestFilter,

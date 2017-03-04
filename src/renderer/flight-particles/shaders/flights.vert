@@ -42,5 +42,5 @@ void main() {
     }
 
     vUv = vec2(position.x, position.y);
-    gl_PointSize = 1.5;
+    gl_PointSize = 1.2;
 }

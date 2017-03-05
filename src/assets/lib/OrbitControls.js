@@ -50,8 +50,8 @@ THREE.OrbitControls = function ( object, domElement ) {
   this.rotateSpeed = 1.0;
 
   // Set to true to disable this control
-  this.noPan = false;
-  this.keyPanSpeed = 7.0;	// pixels moved per arrow key push
+  this.noPan = true;
+  this.keyPanSpeed = 0.0;	// pixels moved per arrow key push
 
   // Set to true to automatically rotate around the target
   this.autoRotate = false;
@@ -115,13 +115,6 @@ THREE.OrbitControls = function ( object, domElement ) {
 
   this.rotateUp = function ( angle ) {
 
-    if ( angle === undefined ) {
-
-      angle = getAutoRotationAngle();
-
-    }
-
-    phiDelta -= angle;
 
   };
 
@@ -576,6 +569,8 @@ THREE.OrbitControls = function ( object, domElement ) {
 
   this.domElement.addEventListener( 'touchstart', touchstart, false );
   this.domElement.addEventListener( 'touchend', touchend, false );
+  this.domElement.addEventListener( 'touchcancel', touchend, false );
+  this.domElement.addEventListener( 'touchleave', touchend, false );
   this.domElement.addEventListener( 'touchmove', touchmove, false );
 
 };

@@ -12,7 +12,9 @@ uniform float startTime;
 uniform float endTime;
 uniform float currentTime;
 uniform float pointSize;
+
 varying vec2 vUv;
+varying float alpha;
 
 vec3 bezier(
   float t,
@@ -24,23 +26,28 @@ vec3 bezier(
 }
 
 void main() {
-    vec3 departurePosition = texture2D( departurePositions, position.xy).xyz;
-    vec3 midPointPosition = texture2D( midPointPositions, position.xy).xyz;
-    vec3 arrivalPosition = texture2D( arrivalPositions, position.xy).xyz;
-
     float flightDepartureTime = texture2D(flightTimes, position.xy).x;
     float flightArrivalTime = texture2D(flightTimes, position.xy).y;
-    float flightTime = clamp(0.5 * (currentTime - flightDepartureTime) / (flightArrivalTime - flightDepartureTime), 0.0, 1.0);
 
-    //vec3 interpolatedPosition = departurePosition * (1.0 - time) + arrivalPosition * time;
+    if (currentTime >= flightDepartureTime && flightArrivalTime <= flightArrivalTime) {
+        alpha = 1.0;
+        vec3 departurePosition = texture2D( departurePositions, position.xy).xyz;
+        vec3 midPointPosition = texture2D( midPointPositions, position.xy).xyz;
+        vec3 arrivalPosition = texture2D( arrivalPositions, position.xy).xyz;
 
-    vec3 interpolatedPosition = bezier(flightTime, departurePosition, midPointPosition, arrivalPosition);
-    gl_Position = projectionMatrix * modelViewMatrix * vec4( interpolatedPosition.xyz, 1.0 );
 
-    if (flightDepartureTime == 0.0 || flightArrivalTime == 0.0)  {
-        interpolatedPosition = vec3(0.0,0.0,0.0);
+        float flightTime = clamp(0.5 * (currentTime - flightDepartureTime) / (flightArrivalTime - flightDepartureTime), 0.0, 1.0);
+
+        //vec3 interpolatedPosition = departurePosition * (1.0 - time) + arrivalPosition * time;
+
+        vec3 interpolatedPosition = bezier(flightTime, departurePosition, midPointPosition, arrivalPosition);
+        gl_Position = projectionMatrix * modelViewMatrix * vec4( interpolatedPosition.xyz, 1.0 );
+
+        vUv = vec2(position.x, position.y);
+        gl_PointSize = 1.5;
+    }
+    else {
+        alpha = 0.0;
     }
 
-    vUv = vec2(position.x, position.y);
-    gl_PointSize = 1.2;
 }

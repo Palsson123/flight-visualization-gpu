@@ -1,5 +1,3 @@
-import * as moment from 'moment'
-
 export class Flight {
   carrierId: string;
   departureTime: number;

@@ -11,10 +11,5 @@ export function spheriticalToCartesian(lon: number, lat: number, radius: number)
     radius * Math.cos(phi)
   );
 
-  if (cartesian.x == 0 && cartesian.y == 0 && cartesian.z == 0) {
-    //console.log(cartesian.x, cartesian.y, cartesian.z, lon, lat);
-  }
-
-
   return cartesian;
 }

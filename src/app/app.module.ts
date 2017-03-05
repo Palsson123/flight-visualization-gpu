@@ -8,8 +8,6 @@ import { MaterialModule } from '@angular/material';
 import { AppComponent } from './app.component';
 import {RenderService} from "../renderer/render.service";
 import {DataService} from "../services/data.service";
-import {MapService} from "../services/map.service";
-import {FlightsService} from "../services/flights/flights.service";
 import {TimeService} from "../services/time.service";
 import {UnixFormatterPipe} from "../pipes/unix-formatter.pipe";
 import {StartPageComponent, LoadingDialog} from "../start-page/start-page.component";
@@ -33,8 +31,6 @@ import {StartPageComponent, LoadingDialog} from "../start-page/start-page.compon
   providers: [
     DataService,
     RenderService,
-    MapService,
-    FlightsService,
     TimeService
   ],
   bootstrap: [AppComponent]

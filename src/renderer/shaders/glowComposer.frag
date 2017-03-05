@@ -15,6 +15,6 @@ void main(void) {
     vec3 flightColor = 10.0 * texture2D( flightTrail, vUv ).xyz;
     //vec3 timelineColor = texture2D( timeline, vUv ).xyz;
 
-    vec3 totalColor = clamp(0.35 * planetGlowAlpha * planetGlowColor + 0.2 * flightColor + sunColor + starsColor, vec3(0.0), vec3(3.0));
+    vec3 totalColor = clamp(0.35 * planetGlowAlpha * planetGlowColor + 0.2 * flightColor + sunColor + starsColor, vec3(0.0), vec3(2.0));
     gl_FragColor = vec4(totalColor, 1.0);
 }

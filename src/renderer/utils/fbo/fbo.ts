@@ -25,7 +25,7 @@ export class FBO {
     this._renderTarget = new THREE.WebGLRenderTarget(width, height, {
       minFilter: filtering != null ? filtering : THREE.NearestFilter,
       magFilter: filtering != null ? filtering : THREE.NearestFilter,
-      format: THREE.RGBFormat,
+      format: THREE.RGBAFormat,
       type: THREE.FloatType,
     });
 

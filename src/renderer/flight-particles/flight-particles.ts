@@ -51,7 +51,6 @@ export default class FlightParticles {
 
     this._uniforms.currentTime.value = this._timeService.currentTime / uniformFactor;
 
-
     this._renderer.render(this._scene, this._camera, this._renderTarget);
     this._currentIndex = this._currentIndex == 0 ? 1 : 0;
     this._flightTrailUniforms.flightTrail.value = this._renderTarget.texture;
@@ -76,7 +75,7 @@ export default class FlightParticles {
     this._renderTarget = new THREE.WebGLRenderTarget(width, height, {
       minFilter: THREE.LinearFilter,
       magFilter: THREE.LinearFilter,
-      format: THREE.RGBFormat,
+      format: THREE.RGBAFormat,
       type: THREE.FloatType,
     });
 
@@ -104,7 +103,8 @@ export default class FlightParticles {
     });
     this._particlesRenderShader.needsUpdate = true;
 
-    let l = width * height;
+    let flightCountSquared = Math.sqrt(flights.length);
+    let l = flightCountSquared * flightCountSquared;
     let vertices = new Float32Array(l * 3);
     for (let i = 0; i < l; i++) {
       let i3 = i * 3;

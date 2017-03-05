@@ -11,14 +11,14 @@ uniform vec2 size;
 varying vec2 vUv;
 
 void main(void) {
-    vec3 planetColor = texture2D( planet, vUv ).xyz;
-    vec3 flightsColor = texture2D( flights, vUv ).xyz;
-    vec3 mapColor = texture2D( map, vUv ).xyz;
-    vec3 sunColor = texture2D( sun, vUv ).xyz;
-    vec3 borderColor = texture2D( countryBorders, vUv ).xyz;
-    vec3 starsColor = texture2D( stars, vUv ).xyz;
-    vec3 glowColor = texture2D( glow, vUv ).xyz;
-    vec3 timelineColor = texture2D( timeline, vUv ).xyz;
+    vec4 planetColor = texture2D( planet, vUv );
+    vec4 flightsColor = texture2D( flights, vUv );
+    vec4 mapColor = texture2D( map, vUv );
+    vec4 sunColor = texture2D( sun, vUv );
+    vec4 borderColor = texture2D( countryBorders, vUv );
+    vec4 starsColor = texture2D( stars, vUv );
+    vec4 glowColor = texture2D( glow, vUv );
+    vec4 timelineColor = texture2D( timeline, vUv );
 
-    gl_FragColor = vec4(glowColor + planetColor + starsColor + flightsColor + mapColor + sunColor + borderColor, 1.0);
+    gl_FragColor = glowColor + planetColor + starsColor + flightsColor + mapColor + sunColor + borderColor;
 }

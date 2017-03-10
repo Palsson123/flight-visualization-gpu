@@ -23,7 +23,17 @@ export class DataService {
   constructor(private http: Http) {
     this._dataLoaded = new BehaviorSubject(false);
 
-    this._flightsObservable = this.http.get('../../assets/data/flights.csv')
+    // let test = this.http.get('./assets/data/Sept29.binflight')
+    //   .map((res: any) => {
+    //     console.log(res.arrayBuffer());
+    //     let buffer = (new Uint8Array(res.arrayBuffer())).buffer;
+    //     console.log(buffer);
+    //     return res;
+    //   });
+    //
+    // test.subscribe((res) => {});
+
+    this._flightsObservable = this.http.get('./assets/data/flights-3.csv')
       .share()
       .map((res: any) => {
         console.log('data fetched');
@@ -39,7 +49,7 @@ export class DataService {
         return flights;
       });
 
-    this._airportsObservable = this.http.get('../../assets/data/airports.csv').map((res: any) => {
+    this._airportsObservable = this.http.get('./assets/data/airports.csv').map((res: any) => {
       let airports = {};
       for (let airportJSON of d3.csvParse(res._body)) {
         airports[airportJSON['iata']] = Airport.CreateFromJSON(airportJSON);
@@ -48,7 +58,7 @@ export class DataService {
       return airports;
     });
 
-    this._featuresObservable = this.http.get('../assets/data/world.json').map((res: Response) => {
+    this._featuresObservable = this.http.get('./assets/data/world.json').map((res: Response) => {
       this._features = res.json().features;
       return res.json().features;
     });
@@ -56,17 +66,18 @@ export class DataService {
 
   private exportFilteredCSV(res: any, startDate: string, endDate: string) {
     // let header = '"MONTH","DAY_OF_MONTH","DAY_OF_WEEK","FL_DATE","CARRIER","TAIL_NUM","FL_NUM","ORIGIN","DEST","CRS_DEP_TIME","DEP_TIME","DEP_DELAY","DEP_DELAY_NEW","CRS_ARR_TIME","ARR_TIME","ARR_DELAY","ARR_DELAY_NEW","CANCELLED","CANCELLATION_CODE","CRS_ELAPSED_TIME","ACTUAL_ELAPSED_TIME","AIR_TIME","DISTANCE","CARRIER_DELAY","WEATHER_DELAY","NAS_DELAY","SECURITY_DELAY","LATE_AIRCRAFT_DELAY",\n'
-    let csvString = '"DEPARTURE","ARRIVAL","CARRIER","ORIGIN","DEST","CARRIER","DISTANCE","ARR_DELAY",\n'
+    let csvString = '"DEPARTURE","ARRIVAL","ORIGIN","DEST","CARRIER","DISTANCE","DEP_DELAY","ARR_DELAY",\n'
     let start = moment(startDate).unix();
     let end = moment(endDate).unix();
 
     for (let flightJSON of d3.csvParse(res._body)) {
+      //console.log(flightJSON);
       let deparuteDateString = flightJSON['FL_DATE'] + ' ' + flightJSON['DEP_TIME'].slice(0,2) + ':' + flightJSON['DEP_TIME'].slice(2,4);
       let departureTime = moment(deparuteDateString, 'YYYY-MM-DD hh:mm').unix();
       let arrivalTime = moment(deparuteDateString, 'YYYY-MM-DD hh:mm').unix() + parseFloat(flightJSON['ACTUAL_ELAPSED_TIME']) / 100 * 60 * 60;
 
       if (departureTime >= start && arrivalTime <= end) {
-        csvString +=`${departureTime},${arrivalTime},"${flightJSON["CARRIER"]}","${flightJSON["ORIGIN"]}","${flightJSON["DEST"]}","${flightJSON["DISTANCE"]}",${flightJSON["DISTANCE"]}, \n`
+        csvString +=`${departureTime},${arrivalTime},"${flightJSON["ORIGIN"]}","${flightJSON["DEST"]}",${flightJSON["DISTANCE"]},${flightJSON["DEP_DELAY"]},${flightJSON["ARR_DELAY"]}, \n`
       }
     }
 

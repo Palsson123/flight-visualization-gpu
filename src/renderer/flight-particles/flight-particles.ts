@@ -84,9 +84,11 @@ export default class FlightParticles {
       midPointPositions: { value: flightTextures.midPointPositions },
       arrivalPositions: { value: flightTextures.arrivalPositions },
       flightTimes: { value: flightTextures.flightTimes },
+      delayTimes: { value: flightTextures.delayTimes },
       positions: { value: flightTextures.departurePositions },
       pointSize: { value: 2 },
       startTime: { value: 0 },
+      visualizeDelay: { value: 0.0 },
       endTime: { value: this._timeService.endTime - this._timeService.startTime},
       currentTime: { value: 0 }
     };
@@ -143,6 +145,7 @@ export default class FlightParticles {
     let departurePositions = new Float32Array(length);
     let midPointPositions = new Float32Array(length);
     let arrivalPositions = new Float32Array(length);
+    let delayTimes = new Float32Array(length);
     let flightTimes = new Float32Array(length);
 
     for (let i = 0; i < flights.length * 3; i += 3) {
@@ -168,6 +171,10 @@ export default class FlightParticles {
         midPointPositions[i + 2] = midPos.z;
         arrivalPositions[i + 2] = arrivalPos.z;
 
+        delayTimes[i] = flight.departureDelay;
+        delayTimes[i + 1] = flight.arrivalDelay;
+        delayTimes[i + 2] = 0;
+
         flightTimes[i] = (flight.departureTime - this._timeService.startTime) / uniformFactor;
         flightTimes[i + 1] = (flight.arrivalTime - this._timeService.startTime) / uniformFactor;
         flightTimes[i + 2] = 0;
@@ -179,6 +186,7 @@ export default class FlightParticles {
       midPointPositions: this.generateDataTexture(midPointPositions, width, height),
       arrivalPositions: this.generateDataTexture(arrivalPositions, width, height),
       flightTimes: this.generateDataTexture(flightTimes, width, height),
+      delayTimes: this.generateDataTexture(delayTimes, width, height)
     }
   }
 
@@ -192,6 +200,11 @@ export default class FlightParticles {
     dataTexture.needsUpdate = true;
 
     return dataTexture;
+  }
+
+  public enableDelayVisualization(enable: boolean) {
+    console.log(enable);
+    this._uniforms.visualizeDelay.value = enable ? 1.0 : 0.0;
   }
 
   get texture() {

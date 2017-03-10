@@ -84,7 +84,7 @@ export class RenderService {
       this._glowComposerUniforms.flightTrail.value = this._flightParticles.texture;
       this._glowComposerPass.render();
 
-      this._composerUniforms.glow.value = this._glowPass.blurThisPlease(this._glowComposerPass.texture, 10);
+      this._composerUniforms.glow.value = this._glowPass.blurThisPlease(this._glowComposerPass.texture, 5);
       this._composerUniforms.map.value = this._mapRenderer.texture;
       this._composerUniforms.planet.value = this._mapRenderer.planetTexture;
       this._composerUniforms.sun.value = this._mapRenderer.sunTexture;
@@ -162,6 +162,9 @@ export class RenderService {
     this.render();
   }
 
+  enableDelayVisualization(enable: boolean) {
+    this._flightParticles.enableDelayVisualization(enable);
+  }
   get started(): boolean { return this._started; }
   set started(value: boolean) { this._started = value; }
 }

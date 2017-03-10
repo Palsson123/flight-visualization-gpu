@@ -17,7 +17,10 @@ export class AppComponent implements AfterViewInit {
     public dataService: DataService,
     public renderService: RenderService,
     public timeService: TimeService
-  ) {
+  ) {}
+
+  delaySwitch(event) {
+    this.renderService.enableDelayVisualization(event.checked);
   }
 
   ngAfterViewInit(): void {

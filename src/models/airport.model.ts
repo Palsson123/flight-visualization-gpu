@@ -12,7 +12,6 @@ export class Airport {
   state: string;
 
   constructor(id: string, name: string, city: string, coordinate: number[], state: string) {
-    console.log(name);
     this.id = id;
     this.name = name;
     this.city = city;
